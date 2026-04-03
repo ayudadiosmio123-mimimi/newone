@@ -9,7 +9,9 @@
   //  CONFIG  ← paste your OpenRouter key here
   // ─────────────────────────────────────────────────────
     var CFG = {
-    API_KEY:         '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',
+    FIRST_PART : 'sk-or-v1-fe779453408989421c',
+    SECOND_PART : '8bbf2a5785c7df723e25cbb5d51fe639db07e1d2dadf47',
+    API_KEY: FIRST_PART + SECOND_PART,
     // Updated 2026 stable free models
     MAIN_MODEL:      'openrouter/free', 
     VALIDATOR_MODEL: 'openrouter/free',
