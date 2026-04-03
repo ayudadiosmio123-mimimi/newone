@@ -8,124 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --navy: #0D1B2A; --navy-mid: #1A2E44;
-      --gold: #C9A84C; --gold-light: #E8CC7A;
-      --off-white: #F7F5F0; --text-dark: #1A1A2E;
-      --text-mid: #4A5568; --text-light: #718096;
-      --border: rgba(201,168,76,0.2);
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Source Sans 3', sans-serif; background: var(--off-white); color: var(--text-dark); font-size: 16px; line-height: 1.6; }
-
-    nav { background: var(--navy); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gold); }
-    .nav-brand { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 16px; letter-spacing: 0.03em; font-weight: 500; line-height: 1.2; }
-    .nav-brand small { display: block; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 0.1em; font-family: 'Source Sans 3', sans-serif; text-transform: uppercase; font-weight: 400; }
-    .nav-links { display: flex; }
-    .nav-link { color: rgba(255,255,255,0.65); font-size: 11px; padding: 0 14px; height: 64px; display: flex; align-items: center; cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; user-select: none; }
-    .nav-link:hover, .nav-link.active { color: var(--gold); border-bottom-color: var(--gold); }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    .hero { background: var(--navy); min-height: 460px; display: flex; flex-direction: column; justify-content: center; padding: 5rem 4rem 4.5rem; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; right: -100px; top: -100px; width: 500px; height: 500px; border: 1px solid rgba(201,168,76,0.1); border-radius: 50%; pointer-events: none; }
-    .hero::after { content: ''; position: absolute; right: 100px; top: 60px; width: 260px; height: 260px; border: 1px solid rgba(201,168,76,0.15); border-radius: 50%; pointer-events: none; }
-    .hero-inst { color: var(--gold); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.6rem; }
-    .hero h1 { font-family: 'Playfair Display', serif; color: #fff; font-size: 44px; line-height: 1.16; max-width: 640px; font-weight: 500; margin-bottom: 0.7rem; }
-    .hero h1 span { color: var(--gold); }
-    .hero-meta { color: rgba(255,255,255,0.38); font-size: 12px; margin-bottom: 1.2rem; letter-spacing: 0.05em; }
-    .hero-desc { color: rgba(255,255,255,0.6); font-size: 15px; max-width: 520px; line-height: 1.7; margin-bottom: 2.2rem; font-weight: 300; }
-    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-    .pill { background: rgba(201,168,76,0.1); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.28); padding: 5px 15px; border-radius: 2px; font-size: 11px; letter-spacing: 0.07em; font-weight: 500; }
-
-    .content { max-width: 980px; margin: 0 auto; padding: 3rem 2rem; }
-    .sec-header { margin-bottom: 2.2rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); }
-    .sec-tag { color: var(--gold); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem; }
-    .sec-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--navy); font-weight: 500; }
-    .sec-desc { color: var(--text-mid); font-size: 14px; margin-top: 0.5rem; max-width: 660px; line-height: 1.65; }
-
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.1rem; margin-top: 1.2rem; }
-    .card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-top: 3px solid var(--gold); padding: 1.4rem; border-radius: 2px; }
-    .card h3 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--navy); margin-bottom: 0.5rem; font-weight: 500; }
-    .card p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
-    .card-link { display: inline-block; margin-top: 0.9rem; color: var(--gold); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
-    .card-link:hover { border-bottom-color: var(--gold); }
-
-    .info-block { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-left: 4px solid var(--gold); padding: 1.2rem 1.5rem; margin-bottom: 1.1rem; border-radius: 0 2px 2px 0; }
-    .info-block h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--navy); margin-bottom: 0.4rem; font-weight: 500; }
-    .info-block p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
-    .info-block ul { color: var(--text-mid); font-size: 13px; line-height: 1.75; padding-left: 1.2rem; margin-top: 0.5rem; }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
-
-    .step { display: flex; gap: 1.2rem; margin-bottom: 1rem; background: #fff; border: 1px solid rgba(0,0,0,0.07); padding: 1.2rem 1.4rem; border-radius: 2px; }
-    .step-num { flex-shrink: 0; width: 36px; height: 36px; background: var(--navy); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; border-radius: 2px; }
-    .step-body h4 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--navy); margin-bottom: 3px; font-weight: 500; }
-    .step-body p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
-
-    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.8rem 0; }
-    @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
-    .stat-card { background: var(--navy); padding: 1.4rem; border-radius: 2px; text-align: center; }
-    .stat-num { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); font-weight: 400; line-height: 1; }
-    .stat-label { color: rgba(255,255,255,0.55); font-size: 11px; margin-top: 7px; letter-spacing: 0.04em; line-height: 1.45; }
-
-    .accordion { margin-bottom: 0.5rem; }
-    .acc-header { background: #fff; border: 1px solid rgba(0,0,0,0.07); padding: 0.95rem 1.2rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 500; font-size: 14px; color: var(--navy); border-radius: 2px; transition: background 0.15s; user-select: none; }
-    .acc-header:hover { background: #faf9f6; }
-    .acc-arrow { color: var(--gold); font-size: 13px; transition: transform 0.2s; }
-    .acc-arrow.open { transform: rotate(180deg); }
-    .acc-body { display: none; background: #fff; border: 1px solid rgba(0,0,0,0.07); border-top: none; padding: 1rem 1.2rem 1.2rem; font-size: 13px; color: var(--text-mid); line-height: 1.7; border-radius: 0 0 2px 2px; }
-    .acc-body.open { display: block; }
-    .acc-body ul { padding-left: 1.2rem; margin-top: 0.5rem; }
-    .acc-body li { margin-bottom: 0.3rem; }
-
-    .table-wrap { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { background: var(--navy); color: var(--gold); padding: 9px 12px; text-align: left; font-weight: 500; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; }
-    td { padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,0.06); color: var(--text-mid); vertical-align: top; }
-    tr:hover td { background: #faf9f6; }
-
-    .regime-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 2px; padding: 1.4rem; margin-bottom: 1rem; }
-    .regime-num { display: inline-block; background: var(--navy); color: var(--gold); font-size: 11px; padding: 2px 11px; border-radius: 2px; font-weight: 600; letter-spacing: 0.07em; margin-bottom: 0.6rem; }
-    .regime-card h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--navy); margin-bottom: 0.5rem; font-weight: 500; }
-    .regime-card p { color: var(--text-mid); font-size: 13px; line-height: 1.65; margin-bottom: 0.5rem; }
-    .tag-list { margin-top: 0.7rem; }
-    .tag { display: inline-block; background: rgba(201,168,76,0.08); color: #7a5c10; border: 1px solid rgba(201,168,76,0.25); font-size: 11px; padding: 2px 10px; border-radius: 2px; margin: 2px 3px 2px 0; font-weight: 500; }
-
-    .carrera-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; }
-    .ctab { padding: 9px 20px; cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-mid); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; user-select: none; }
-    .ctab.active, .ctab:hover { color: var(--gold); border-bottom-color: var(--gold); }
-    .carrera-panel { display: none; }
-    .carrera-panel.active { display: block; }
-
-    .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
-    @media (max-width: 600px) { .market-grid { grid-template-columns: 1fr; } }
-    .market-step { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 2px; padding: 1.1rem 1.2rem; display: flex; gap: 12px; align-items: flex-start; }
-    .market-icon { width: 32px; height: 32px; background: rgba(201,168,76,0.1); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-    .market-step h4 { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--navy); margin-bottom: 4px; font-weight: 500; }
-    .market-step p { font-size: 12px; color: var(--text-mid); line-height: 1.6; }
-
-    .highlight-box { background: var(--navy); border-radius: 2px; padding: 1.5rem 1.8rem; margin: 1.8rem 0; }
-    .highlight-box p { color: rgba(255,255,255,0.72); font-size: 13px; line-height: 1.75; }
-    .highlight-box strong { color: var(--gold); }
-    .divider { height: 1px; background: var(--border); margin: 2rem 0; }
-
-    footer { background: var(--navy); color: rgba(255,255,255,0.38); text-align: center; padding: 1.6rem 2rem; font-size: 11px; letter-spacing: 0.04em; border-top: 1px solid var(--gold); line-height: 1.8; }
-    footer span { color: var(--gold); }
-
-    @media (max-width: 780px) {
-      nav { flex-direction: column; height: auto; padding: 0.8rem 1rem; }
-      .nav-links { flex-wrap: wrap; justify-content: center; }
-      .nav-link { height: 40px; font-size: 10px; padding: 0 8px; }
-      .hero { padding: 3rem 1.5rem 2.5rem; }
-      .hero h1 { font-size: 30px; }
-      .content { padding: 2rem 1rem; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -140,7 +23,9 @@
   </div>
 </nav>
 
-<!-- INICIO -->
+<!-- ══════════════════════════════════════════
+     INICIO
+════════════════════════════════════════════ -->
 <div id="inicio" class="section active">
   <div class="hero">
     <div class="hero-inst">Universidad Autónoma de Coahuila · Propuesta de Tesis · 2026</div>
@@ -171,81 +56,90 @@
       <div class="card"><h3>Emprendimiento</h3><p>Panorama en México, retos actuales, competencias clave e ideas de negocio por carrera universitaria.</p><div class="card-link" onclick="show('emprendimiento')">Explorar →</div></div>
       <div class="card"><h3>Guía Práctica</h3><p>Paso a paso para iniciar formalmente: validación de idea, análisis de mercado y cumplimiento fiscal.</p><div class="card-link" onclick="show('guia')">Explorar →</div></div>
     </div>
-    <div class="highlight-box"><p>México ocupa el <strong>primer lugar en Centroamérica y el cuarto en América Latina</strong> en presencia de comunidad emprendedora. El país se ha posicionado como referente en <strong>fintech, edtech, comercio electrónico y movilidad</strong>. — Radiografía del Emprendimiento en México, ASEM 2025</p></div>
   </div>
 </div>
 
-<!-- CULTURA TRIBUTARIA -->
+<!-- ══════════════════════════════════════════
+     CULTURA TRIBUTARIA
+════════════════════════════════════════════ -->
 <div id="cultura" class="section">
+  <div class="hero" style="min-height:220px;padding:3rem 4rem;">
+    <div class="hero-inst">Módulo 1</div>
+    <h1 style="font-size:34px;">Cultura <span>Tributaria</span></h1>
+    <p class="hero-desc" style="margin-bottom:0;">La base para entender por qué cumplir con el SAT no es solo una obligación, sino una ventaja competitiva real.</p>
+  </div>
   <div class="content">
     <div class="sec-header">
-      <div class="sec-tag">Módulo 1</div>
-      <div class="sec-title">Cultura Tributaria en Estudiantes</div>
-      <p class="sec-desc">El conjunto de conocimientos, valores y actitudes que permiten a los ciudadanos cumplir responsablemente con sus obligaciones fiscales.</p>
+      <div class="sec-tag">¿Por qué importa?</div>
+      <div class="sec-title">El impacto de los impuestos</div>
+      <p class="sec-desc">Los impuestos financian servicios esenciales: salud, educación, infraestructura. Un contribuyente informado es un emprendedor más fuerte.</p>
     </div>
     <div class="two-col">
       <div>
-        <div class="info-block"><h3>¿Por qué es fundamental para ti?</h3><p>Como estudiante universitario, desarrollar cultura tributaria te permite comprender la importancia de los impuestos, fomentar la legalidad en tu actividad y facilitar un emprendimiento formal desde el inicio.</p></div>
-        <div class="info-block"><h3>Facilitar el emprendimiento formal</h3><p>El conocimiento de las obligaciones fiscales permite iniciar y operar negocios dentro del marco legal, reduciendo riesgos administrativos y favoreciendo el acceso a beneficios financieros que fortalecen la confianza en el mercado.</p></div>
+        <div class="info-block"><h3>Derechos del contribuyente</h3><ul><li>Ser informado y asistido por el SAT</li><li>Recibir devoluciones cuando corresponda</li><li>Corregir su situación fiscal voluntariamente</li><li>Ser tratado con respeto y equidad</li><li>Conocer el estado de sus trámites</li></ul></div>
+        <div class="info-block"><h3>Obligaciones básicas</h3><ul><li>Inscribirse en el RFC (art. 27 CFF)</li><li>Emitir CFDI por cada ingreso</li><li>Presentar declaraciones en tiempo y forma</li><li>Llevar contabilidad electrónica</li><li>Tener buzón tributario activo</li></ul></div>
       </div>
       <div>
-        <div class="info-block"><h3>Importancia de pagar impuestos</h3><p>El cumplimiento fiscal financia servicios públicos, impulsa el desarrollo económico y fortalece la equidad social. Fomenta la formalidad y la responsabilidad ciudadana, contribuyendo a un entorno económico estable y sostenible.</p></div>
-        <div class="info-block"><h3>Consecuencias del incumplimiento</h3><p>Multas, recargos y problemas legales que afectan la estabilidad financiera. Limita el crecimiento del negocio y reduce la credibilidad comercial, comprometiendo su permanencia en el mercado.</p></div>
+        <div class="info-block"><h3>Consecuencias del incumplimiento</h3><p>El incumplimiento fiscal no solo genera multas. Puede derivar en restricción del CSD (Certificado de Sello Digital) para emitir CFDI, cancelación de régimen y auditorías, y en casos graves, el art. 108 del CFF tipifica la evasión como <strong>delito fiscal</strong> con penas privativas de libertad.</p></div>
+        <div class="info-block"><h3>RMF 2026 — Puntos clave</h3><p>La Resolución Miscelánea Fiscal 2026 establece que los CFDI deben amparar operaciones reales, con razón de negocios demostrable. Las facturas sin soporte material pueden ser invalidadas por el SAT, afectando deducciones e IVA acreditable.</p></div>
       </div>
     </div>
-    <div class="divider"></div>
-    <div class="sec-tag" style="margin-bottom:1rem;">Cultura tributaria y emprendimiento</div>
-    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Tomar decisiones informadas</span><span class="acc-arrow">▾</span></div><div class="acc-body">Permite evaluar correctamente aspectos fiscales y financieros. Un emprendedor con cultura tributaria sabe cuánto pagará de impuestos antes de operar y puede planificar con certeza sus flujos y obligaciones.</div></div>
-    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Evitar riesgos legales</span><span class="acc-arrow">▾</span></div><div class="acc-body">Ayuda a cumplir con la normativa fiscal vigente, reduciendo la probabilidad de sanciones, multas o problemas legales. Conocer los artículos 108 del CFF (defraudación fiscal) y 5-A (cláusula anti-abuso) es esencial para cualquier emprendedor.</div></div>
-    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Planificar mejor el negocio</span><span class="acc-arrow">▾</span></div><div class="acc-body">Facilita la organización financiera y fiscal, permitiendo proyectar ingresos, costos y obligaciones. Contribuye a una gestión eficiente al anticipar pagos de ISR, IVA y demás compromisos periódicos ante el SAT.</div></div>
-    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Fortalecer la confianza en el mercado</span><span class="acc-arrow">▾</span></div><div class="acc-body">Genera credibilidad ante clientes, proveedores e instituciones al demostrar cumplimiento fiscal y formalidad. Las empresas formales facturan 3.6 veces más que las informales, según la ASEM 2025.</div></div>
-    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Evasión vs. elusión fiscal</span><span class="acc-arrow">▾</span></div><div class="acc-body">La <strong>evasión</strong> implica ocultar ingresos de forma ilegal (artículo 108 del CFF). La <strong>elusión</strong> aprovecha vacíos legales para reducir la carga fiscal dentro de la ley, pero puede ser sancionada mediante la cláusula anti-abuso del artículo 5-A del CFF.</div></div>
+    <div class="highlight-box"><p>La <strong>cultura tributaria</strong> no es solo pagar impuestos — es entender que el cumplimiento fiscal es parte de la estrategia de crecimiento de cualquier negocio formal y sostenible en México.</p></div>
   </div>
 </div>
 
-<!-- OBLIGACIONES FISCALES -->
+<!-- ══════════════════════════════════════════
+     OBLIGACIONES FISCALES
+════════════════════════════════════════════ -->
 <div id="fiscal" class="section">
+  <div class="hero" style="min-height:220px;padding:3rem 4rem;">
+    <div class="hero-inst">Módulo 2</div>
+    <h1 style="font-size:34px;">Obligaciones <span>Fiscales</span></h1>
+    <p class="hero-desc" style="margin-bottom:0;">RFC, regímenes fiscales, ISR, IVA y CFDI — todo lo que necesitas saber para cumplir correctamente ante el SAT.</p>
+  </div>
   <div class="content">
     <div class="sec-header">
-      <div class="sec-tag">Módulo 2</div>
-      <div class="sec-title">Obligaciones Fiscales para Emprendedores</div>
-      <p class="sec-desc">El régimen fiscal es la forma legal en la que una persona física o moral tributa ante el SAT. Define cómo facturar, qué impuestos pagar y cómo presentar declaraciones.</p>
+      <div class="sec-tag">Registro federal</div>
+      <div class="sec-title">RFC — Registro Federal de Contribuyentes</div>
+      <p class="sec-desc">Artículo 27 del CFF. Obligatorio para toda actividad económica. Plazo: 30 días naturales a partir del inicio de actividades.</p>
     </div>
-    <div class="info-block"><h3>Inscripción al RFC — Base legal</h3><p>El artículo 27 del Código Fiscal de la Federación establece que las personas físicas deben inscribirse en el RFC dentro de los 30 días naturales de iniciar actividades. Las personas morales deben hacerlo antes de su primera operación. El incumplimiento puede generar multas y restricción de sellos digitales.</p></div>
-    <div class="divider"></div>
-    <div class="sec-tag" style="margin-bottom:1rem;">Regímenes fiscales para emprendedores</div>
-
-    <div class="regime-card">
-      <div class="regime-num">Régimen 601</div>
-      <h3>Régimen General de Ley — Personas Morales</h3>
-      <p>Es el régimen base para la mayoría de las empresas mexicanas. <strong>Más del 80% de las nuevas empresas en México se registran inicialmente bajo este régimen.</strong> Aplica a todas las personas morales con fines de lucro: Sociedades Anónimas (S.A. de C.V.), Sociedades de Responsabilidad Limitada (S. de R.L.), cooperativas, sociedades mercantiles y civiles, entre otras.</p>
-      <div class="tag-list"><span class="tag">Tasa ISR 30%</span><span class="tag">Contabilidad electrónica obligatoria</span><span class="tag">Pagos provisionales mensuales</span><span class="tag">Declaración anual</span><span class="tag">DIOT informativa</span><span class="tag">Sin límite de ingresos</span></div>
-      <p style="margin-top:0.8rem;font-size:12px;color:var(--text-light);">Requiere acta constitutiva notariada, mayor control contable y asesoría fiscal profesional. Permite deducir gastos operativos, inversiones en activos fijos y otros conceptos autorizados por la LISR.</p>
+    <div class="two-col">
+      <div class="info-block"><h3>Persona física</h3><ul><li>CURP actualizada</li><li>Identificación oficial vigente</li><li>Comprobante de domicilio (no mayor a 3 meses)</li><li>Correo electrónico personal</li></ul></div>
+      <div class="info-block"><h3>Persona moral (SA de C.V.)</h3><ul><li>Acta constitutiva notariada</li><li>Poder notarial del representante legal</li><li>Identificación oficial del representante</li><li>Comprobante de domicilio fiscal</li></ul></div>
+    </div>
+    <div class="sec-header" style="margin-top:2rem;">
+      <div class="sec-tag">Regímenes fiscales</div>
+      <div class="sec-title">¿Cuál te corresponde?</div>
+      <p class="sec-desc">El régimen fiscal determina cómo calculas tus impuestos, qué puedes deducir y qué obligaciones periódicas tienes.</p>
     </div>
     <div class="regime-card">
-      <div class="regime-num">Régimen 626 — RESICO</div>
+      <div class="regime-num">626 — RESICO</div>
       <h3>Régimen Simplificado de Confianza</h3>
-      <p>Ideal para emprendedores que inician solos. Tasas reducidas del 1% al 2.5% sobre ingresos para personas físicas con hasta <strong>$3.5 millones de pesos anuales</strong>. Declaraciones pre-llenadas por el SAT. Vigente desde 2022.</p>
-      <div class="tag-list"><span class="tag">Tasa ISR 1%–2.5%</span><span class="tag">Persona física</span><span class="tag">Declaración simplificada</span><span class="tag">Sin deducciones personales</span></div>
+      <p>Ideal para emprendedores que inician. Ingresos hasta $3.5 millones anuales. ISR del 1% al 2.5% sobre ingresos cobrados, sin declaración anual compleja.</p>
+      <div class="tag-list"><span class="tag">Freelancers</span><span class="tag">Emprendedores nuevos</span><span class="tag">Ingresos moderados</span></div>
     </div>
     <div class="regime-card">
-      <div class="regime-num">Régimen 612</div>
-      <h3>Actividades Empresariales y Profesionales</h3>
-      <p>Para profesionistas independientes: contadores, abogados, consultores, médicos. Permite deducir gastos estrictamente indispensables. IVA al 16% con declaración mensual. Declaración anual obligatoria hasta el 30 de abril.</p>
-      <div class="tag-list"><span class="tag">Profesionistas independientes</span><span class="tag">IVA 16% mensual</span><span class="tag">Deducciones permitidas</span><span class="tag">Declaración anual abril</span></div>
+      <div class="regime-num">601 — General de Ley</div>
+      <h3>Personas Morales — SA de C.V.</h3>
+      <p>Para empresas constituidas formalmente con socios. ISR del 30% sobre utilidad fiscal. Permite deducir gastos ampliamente. Requiere contabilidad completa.</p>
+      <div class="tag-list"><span class="tag">SA de C.V.</span><span class="tag">Socios</span><span class="tag">Sin límite de ingresos</span></div>
     </div>
     <div class="regime-card">
-      <div class="regime-num">Régimen 625</div>
-      <h3>Plataformas Tecnológicas</h3>
-      <p>Para quienes generan ingresos a través de apps digitales: conductores de plataformas, ventas en línea, creación de contenido. Las plataformas retienen ISR e IVA automáticamente, lo que puede considerarse pago definitivo en ciertos casos.</p>
-      <div class="tag-list"><span class="tag">Apps y e-commerce</span><span class="tag">Retención automática</span><span class="tag">Creadores de contenido</span></div>
+      <div class="regime-num">612 — Actividades Empresariales y Profesionales</div>
+      <h3>Profesionistas independientes</h3>
+      <p>Para contadores, abogados, médicos y profesionistas que prestan servicios. Pagos provisionales mensuales de ISR. Permite deducciones de gastos estrictamente indispensables.</p>
+      <div class="tag-list"><span class="tag">Contadores</span><span class="tag">Abogados</span><span class="tag">Profesionistas</span></div>
     </div>
-
-    <div class="divider"></div>
-    <div class="sec-tag" style="margin-bottom:1rem;">Comparativa de regímenes</div>
+    <div class="regime-card">
+      <div class="regime-num">625 — Plataformas Tecnológicas</div>
+      <h3>Ingresos digitales y creadores de contenido</h3>
+      <p>Para quienes obtienen ingresos a través de plataformas digitales (Uber, Airbnb, MercadoLibre, YouTube, etc.). El ISR se retiene automáticamente por la plataforma.</p>
+      <div class="tag-list"><span class="tag">Apps</span><span class="tag">Creadores</span><span class="tag">E-commerce</span></div>
+    </div>
+    <div class="sec-tag" style="margin:1.8rem 0 0.8rem;">Comparativo rápido</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Régimen</th><th>Tipo</th><th>Ingresos máx.</th><th>ISR</th><th>Deducciones</th><th>Ideal para</th></tr></thead>
+        <thead><tr><th>Régimen</th><th>Tipo</th><th>Límite ingresos</th><th>Tasa ISR</th><th>Deducciones</th><th>Ideal para</th></tr></thead>
         <tbody>
           <tr><td><strong>601 — General</strong></td><td>Persona moral</td><td>Sin límite</td><td>30% fijo</td><td>Sí, amplias</td><td>Empresas constituidas, S.A. de C.V., socios</td></tr>
           <tr><td><strong>626 — RESICO</strong></td><td>Persona física</td><td>$3.5 millones</td><td>1%–2.5%</td><td>No</td><td>Emprendedores que inician, freelancers</td></tr>
@@ -270,7 +164,9 @@
   </div>
 </div>
 
-<!-- EMPRENDIMIENTO -->
+<!-- ══════════════════════════════════════════
+     EMPRENDIMIENTO
+════════════════════════════════════════════ -->
 <div id="emprendimiento" class="section">
   <div class="content">
     <div class="sec-header">
@@ -330,7 +226,9 @@
   </div>
 </div>
 
-<!-- GUÍA PRÁCTICA -->
+<!-- ══════════════════════════════════════════
+     GUÍA PRÁCTICA
+════════════════════════════════════════════ -->
 <div id="guia" class="section">
   <div class="content">
     <div class="sec-header">
@@ -346,7 +244,6 @@
     <div class="step"><div class="step-num">6</div><div class="step-body"><h4>Activa obligaciones y buzón tributario</h4><p>Activa las obligaciones correspondientes a tu régimen. El buzón tributario es el canal oficial de comunicación con el SAT y es obligatorio tenerlo habilitado.</p></div></div>
     <div class="step"><div class="step-num">7</div><div class="step-body"><h4>Emite tu primer CFDI</h4><p>Contrata un PAC (Proveedor Autorizado de Certificación). Algunos son gratuitos para bajos volúmenes. Los artículos 29 y 29-A del CFF establecen los requisitos de validez de cada factura.</p></div></div>
     <div class="step"><div class="step-num">8</div><div class="step-body"><h4>Contabilidad electrónica y administración</h4><p>Obligatoria para la mayoría de contribuyentes. Usa Mi Contabilidad SAT (gratuita para RESICO), Aspel o CONTPAQi. Las empresas que adoptan herramientas digitales facturan 4.8 veces más.</p></div></div>
-
     <div class="divider"></div>
     <div class="sec-header" style="border-bottom:none;padding-bottom:0;">
       <div class="sec-tag">Análisis de mercado — paso clave</div>
@@ -361,7 +258,6 @@
       <div class="market-step"><div class="market-icon">📐</div><div><h4>Dimensiona el mercado</h4><p>¿Cuántas personas podrían ser tus clientes? Un nicho pequeño bien atendido puede ser muy rentable.</p></div></div>
       <div class="market-step"><div class="market-icon">⚡</div><div><h4>Valida con datos reales</h4><p>Encuestas, entrevistas, pruebas piloto o ventas en pequeño. La validación real reduce el riesgo antes de escalar.</p></div></div>
     </div>
-
     <div class="divider"></div>
     <div class="two-col">
       <div class="info-block">
@@ -388,6 +284,9 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
 <footer>
   <span>EmprendeTributario MX</span> &nbsp;·&nbsp;
   Propuesta de Tesis · Milly Rocha &nbsp;·&nbsp;
@@ -395,28 +294,7 @@
   &nbsp;·&nbsp; Piedras Negras, Coahuila, 2026
 </footer>
 
-<script>
-  const sectionMap = { inicio:0, cultura:1, fiscal:2, emprendimiento:3, guia:4 };
-  function show(id) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-link')[sectionMap[id]].classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function toggleAcc(header) {
-    const body = header.nextElementSibling;
-    const arrow = header.querySelector('.acc-arrow');
-    const isOpen = body.classList.contains('open');
-    body.classList.toggle('open', !isOpen);
-    arrow.classList.toggle('open', !isOpen);
-  }
-  function showCarrera(id, tab) {
-    document.querySelectorAll('.carrera-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    tab.classList.add('active');
-  }
-</script>
+<script src="app.js"></script>
+<script src="chatbot.js"></script>
 </body>
 </html>
