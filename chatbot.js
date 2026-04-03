@@ -11,8 +11,8 @@
     var CFG = {
     API_KEY:         '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',
     // Updated 2026 stable free models
-    MAIN_MODEL:      'google/gemma-3-27b-it:free', 
-    VALIDATOR_MODEL: 'meta-llama/llama-3.2-3b-instruct:free',
+    MAIN_MODEL:      'openrouter/free', 
+    VALIDATOR_MODEL: 'openrouter/free',
     API_URL:         'https://openrouter.ai/api/v1/chat/completions',
     MAX_TOKENS:      600,
     SCORE_THRESHOLD: 1
