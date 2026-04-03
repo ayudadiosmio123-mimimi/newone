@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmprendeTributario MX — Cultura Tributaria para Estudiantes Emprendedores</title>
+  <meta name="description" content="Plataforma de orientación sobre obligaciones fiscales, formalización de negocios y competencias emprendedoras para egresados de Contabilidad, Administración y Derecho. UAdeC 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0D1B2A; --navy-mid: #1A2E44;
+      --gold: #C9A84C; --gold-light: #E8CC7A;
+      --off-white: #F7F5F0; --text-dark: #1A1A2E;
+      --text-mid: #4A5568; --text-light: #718096;
+      --border: rgba(201,168,76,0.2);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Source Sans 3', sans-serif; background: var(--off-white); color: var(--text-dark); font-size: 16px; line-height: 1.6; }
+
+    nav { background: var(--navy); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gold); }
+    .nav-brand { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 16px; letter-spacing: 0.03em; font-weight: 500; line-height: 1.2; }
+    .nav-brand small { display: block; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 0.1em; font-family: 'Source Sans 3', sans-serif; text-transform: uppercase; font-weight: 400; }
+    .nav-links { display: flex; }
+    .nav-link { color: rgba(255,255,255,0.65); font-size: 11px; padding: 0 14px; height: 64px; display: flex; align-items: center; cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; user-select: none; }
+    .nav-link:hover, .nav-link.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .hero { background: var(--navy); min-height: 460px; display: flex; flex-direction: column; justify-content: center; padding: 5rem 4rem 4.5rem; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; right: -100px; top: -100px; width: 500px; height: 500px; border: 1px solid rgba(201,168,76,0.1); border-radius: 50%; pointer-events: none; }
+    .hero::after { content: ''; position: absolute; right: 100px; top: 60px; width: 260px; height: 260px; border: 1px solid rgba(201,168,76,0.15); border-radius: 50%; pointer-events: none; }
+    .hero-inst { color: var(--gold); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.6rem; }
+    .hero h1 { font-family: 'Playfair Display', serif; color: #fff; font-size: 44px; line-height: 1.16; max-width: 640px; font-weight: 500; margin-bottom: 0.7rem; }
+    .hero h1 span { color: var(--gold); }
+    .hero-meta { color: rgba(255,255,255,0.38); font-size: 12px; margin-bottom: 1.2rem; letter-spacing: 0.05em; }
+    .hero-desc { color: rgba(255,255,255,0.6); font-size: 15px; max-width: 520px; line-height: 1.7; margin-bottom: 2.2rem; font-weight: 300; }
+    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { background: rgba(201,168,76,0.1); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.28); padding: 5px 15px; border-radius: 2px; font-size: 11px; letter-spacing: 0.07em; font-weight: 500; }
+
+    .content { max-width: 980px; margin: 0 auto; padding: 3rem 2rem; }
+    .sec-header { margin-bottom: 2.2rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); }
+    .sec-tag { color: var(--gold); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem; }
+    .sec-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--navy); font-weight: 500; }
+    .sec-desc { color: var(--text-mid); font-size: 14px; margin-top: 0.5rem; max-width: 660px; line-height: 1.65; }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.1rem; margin-top: 1.2rem; }
+    .card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-top: 3px solid var(--gold); padding: 1.4rem; border-radius: 2px; }
+    .card h3 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--navy); margin-bottom: 0.5rem; font-weight: 500; }
+    .card p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
+    .card-link { display: inline-block; margin-top: 0.9rem; color: var(--gold); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+    .card-link:hover { border-bottom-color: var(--gold); }
+
+    .info-block { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-left: 4px solid var(--gold); padding: 1.2rem 1.5rem; margin-bottom: 1.1rem; border-radius: 0 2px 2px 0; }
+    .info-block h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--navy); margin-bottom: 0.4rem; font-weight: 500; }
+    .info-block p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
+    .info-block ul { color: var(--text-mid); font-size: 13px; line-height: 1.75; padding-left: 1.2rem; margin-top: 0.5rem; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    .step { display: flex; gap: 1.2rem; margin-bottom: 1rem; background: #fff; border: 1px solid rgba(0,0,0,0.07); padding: 1.2rem 1.4rem; border-radius: 2px; }
+    .step-num { flex-shrink: 0; width: 36px; height: 36px; background: var(--navy); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; border-radius: 2px; }
+    .step-body h4 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--navy); margin-bottom: 3px; font-weight: 500; }
+    .step-body p { color: var(--text-mid); font-size: 13px; line-height: 1.65; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.8rem 0; }
+    @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
+    .stat-card { background: var(--navy); padding: 1.4rem; border-radius: 2px; text-align: center; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); font-weight: 400; line-height: 1; }
+    .stat-label { color: rgba(255,255,255,0.55); font-size: 11px; margin-top: 7px; letter-spacing: 0.04em; line-height: 1.45; }
+
+    .accordion { margin-bottom: 0.5rem; }
+    .acc-header { background: #fff; border: 1px solid rgba(0,0,0,0.07); padding: 0.95rem 1.2rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 500; font-size: 14px; color: var(--navy); border-radius: 2px; transition: background 0.15s; user-select: none; }
+    .acc-header:hover { background: #faf9f6; }
+    .acc-arrow { color: var(--gold); font-size: 13px; transition: transform 0.2s; }
+    .acc-arrow.open { transform: rotate(180deg); }
+    .acc-body { display: none; background: #fff; border: 1px solid rgba(0,0,0,0.07); border-top: none; padding: 1rem 1.2rem 1.2rem; font-size: 13px; color: var(--text-mid); line-height: 1.7; border-radius: 0 0 2px 2px; }
+    .acc-body.open { display: block; }
+    .acc-body ul { padding-left: 1.2rem; margin-top: 0.5rem; }
+    .acc-body li { margin-bottom: 0.3rem; }
+
+    .table-wrap { overflow-x: auto; margin-top: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background: var(--navy); color: var(--gold); padding: 9px 12px; text-align: left; font-weight: 500; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; }
+    td { padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,0.06); color: var(--text-mid); vertical-align: top; }
+    tr:hover td { background: #faf9f6; }
+
+    .regime-card { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 2px; padding: 1.4rem; margin-bottom: 1rem; }
+    .regime-num { display: inline-block; background: var(--navy); color: var(--gold); font-size: 11px; padding: 2px 11px; border-radius: 2px; font-weight: 600; letter-spacing: 0.07em; margin-bottom: 0.6rem; }
+    .regime-card h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--navy); margin-bottom: 0.5rem; font-weight: 500; }
+    .regime-card p { color: var(--text-mid); font-size: 13px; line-height: 1.65; margin-bottom: 0.5rem; }
+    .tag-list { margin-top: 0.7rem; }
+    .tag { display: inline-block; background: rgba(201,168,76,0.08); color: #7a5c10; border: 1px solid rgba(201,168,76,0.25); font-size: 11px; padding: 2px 10px; border-radius: 2px; margin: 2px 3px 2px 0; font-weight: 500; }
+
+    .carrera-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; }
+    .ctab { padding: 9px 20px; cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-mid); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; user-select: none; }
+    .ctab.active, .ctab:hover { color: var(--gold); border-bottom-color: var(--gold); }
+    .carrera-panel { display: none; }
+    .carrera-panel.active { display: block; }
+
+    .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+    @media (max-width: 600px) { .market-grid { grid-template-columns: 1fr; } }
+    .market-step { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 2px; padding: 1.1rem 1.2rem; display: flex; gap: 12px; align-items: flex-start; }
+    .market-icon { width: 32px; height: 32px; background: rgba(201,168,76,0.1); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .market-step h4 { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--navy); margin-bottom: 4px; font-weight: 500; }
+    .market-step p { font-size: 12px; color: var(--text-mid); line-height: 1.6; }
+
+    .highlight-box { background: var(--navy); border-radius: 2px; padding: 1.5rem 1.8rem; margin: 1.8rem 0; }
+    .highlight-box p { color: rgba(255,255,255,0.72); font-size: 13px; line-height: 1.75; }
+    .highlight-box strong { color: var(--gold); }
+    .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+
+    footer { background: var(--navy); color: rgba(255,255,255,0.38); text-align: center; padding: 1.6rem 2rem; font-size: 11px; letter-spacing: 0.04em; border-top: 1px solid var(--gold); line-height: 1.8; }
+    footer span { color: var(--gold); }
+
+    @media (max-width: 780px) {
+      nav { flex-direction: column; height: auto; padding: 0.8rem 1rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+      .nav-link { height: 40px; font-size: 10px; padding: 0 8px; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .hero h1 { font-size: 30px; }
+      .content { padding: 2rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">EmprendeTributario MX<small>UAdeC · Fac. Administración, Contabilidad y Derecho</small></div>
+  <div class="nav-links">
+    <div class="nav-link active"  onclick="show('inicio')">Inicio</div>
+    <div class="nav-link"         onclick="show('cultura')">Cultura Tributaria</div>
+    <div class="nav-link"         onclick="show('fiscal')">Obligaciones Fiscales</div>
+    <div class="nav-link"         onclick="show('emprendimiento')">Emprendimiento</div>
+    <div class="nav-link"         onclick="show('guia')">Guía Práctica</div>
+  </div>
+</nav>
+
+<!-- INICIO -->
+<div id="inicio" class="section active">
+  <div class="hero">
+    <div class="hero-inst">Universidad Autónoma de Coahuila · Propuesta de Tesis · 2026</div>
+    <h1>Cultura Tributaria para<br><span>Estudiantes Emprendedores</span></h1>
+    <div class="hero-meta">Autora: Milly Rocha &nbsp;·&nbsp; Piedras Negras, Coahuila, México</div>
+    <p class="hero-desc">Plataforma de orientación sobre obligaciones fiscales, formalización de negocios y competencias emprendedoras para egresados de Contabilidad, Administración y Derecho.</p>
+    <div class="hero-pills">
+      <span class="pill">SAT · RFC · CFDI</span>
+      <span class="pill">Régimen 601 · RESICO · 612 · 625</span>
+      <span class="pill">ISR · IVA · CFF</span>
+      <span class="pill">Emprendimiento Formal</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num">35.8%</div><div class="stat-label">De negocios fracasan por desconocer su mercado objetivo</div></div>
+      <div class="stat-card"><div class="stat-num">3.6x</div><div class="stat-label">Más facturación en empresas formalmente establecidas</div></div>
+      <div class="stat-card"><div class="stat-num">80%+</div><div class="stat-label">De nuevas empresas en México inician en el Régimen 601</div></div>
+    </div>
+    <div class="sec-header">
+      <div class="sec-tag">Contenido de la plataforma</div>
+      <div class="sec-title">¿Qué encontrarás aquí?</div>
+      <p class="sec-desc">Esta plataforma acompaña al recién egresado desde la comprensión de sus obligaciones fiscales hasta la formalización y operación de su propio negocio.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="card"><h3>Cultura Tributaria</h3><p>Por qué importan los impuestos, derechos del contribuyente y consecuencias del incumplimiento fiscal.</p><div class="card-link" onclick="show('cultura')">Explorar →</div></div>
+      <div class="card"><h3>Obligaciones Fiscales</h3><p>RFC, regímenes fiscales (601, RESICO, 612, 625), ISR, IVA, CFDI y cumplimiento ante el SAT.</p><div class="card-link" onclick="show('fiscal')">Explorar →</div></div>
+      <div class="card"><h3>Emprendimiento</h3><p>Panorama en México, retos actuales, competencias clave e ideas de negocio por carrera universitaria.</p><div class="card-link" onclick="show('emprendimiento')">Explorar →</div></div>
+      <div class="card"><h3>Guía Práctica</h3><p>Paso a paso para iniciar formalmente: validación de idea, análisis de mercado y cumplimiento fiscal.</p><div class="card-link" onclick="show('guia')">Explorar →</div></div>
+    </div>
+    <div class="highlight-box"><p>México ocupa el <strong>primer lugar en Centroamérica y el cuarto en América Latina</strong> en presencia de comunidad emprendedora. El país se ha posicionado como referente en <strong>fintech, edtech, comercio electrónico y movilidad</strong>. — Radiografía del Emprendimiento en México, ASEM 2025</p></div>
+  </div>
+</div>
+
+<!-- CULTURA TRIBUTARIA -->
+<div id="cultura" class="section">
+  <div class="content">
+    <div class="sec-header">
+      <div class="sec-tag">Módulo 1</div>
+      <div class="sec-title">Cultura Tributaria en Estudiantes</div>
+      <p class="sec-desc">El conjunto de conocimientos, valores y actitudes que permiten a los ciudadanos cumplir responsablemente con sus obligaciones fiscales.</p>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="info-block"><h3>¿Por qué es fundamental para ti?</h3><p>Como estudiante universitario, desarrollar cultura tributaria te permite comprender la importancia de los impuestos, fomentar la legalidad en tu actividad y facilitar un emprendimiento formal desde el inicio.</p></div>
+        <div class="info-block"><h3>Facilitar el emprendimiento formal</h3><p>El conocimiento de las obligaciones fiscales permite iniciar y operar negocios dentro del marco legal, reduciendo riesgos administrativos y favoreciendo el acceso a beneficios financieros que fortalecen la confianza en el mercado.</p></div>
+      </div>
+      <div>
+        <div class="info-block"><h3>Importancia de pagar impuestos</h3><p>El cumplimiento fiscal financia servicios públicos, impulsa el desarrollo económico y fortalece la equidad social. Fomenta la formalidad y la responsabilidad ciudadana, contribuyendo a un entorno económico estable y sostenible.</p></div>
+        <div class="info-block"><h3>Consecuencias del incumplimiento</h3><p>Multas, recargos y problemas legales que afectan la estabilidad financiera. Limita el crecimiento del negocio y reduce la credibilidad comercial, comprometiendo su permanencia en el mercado.</p></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Cultura tributaria y emprendimiento</div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Tomar decisiones informadas</span><span class="acc-arrow">▾</span></div><div class="acc-body">Permite evaluar correctamente aspectos fiscales y financieros. Un emprendedor con cultura tributaria sabe cuánto pagará de impuestos antes de operar y puede planificar con certeza sus flujos y obligaciones.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Evitar riesgos legales</span><span class="acc-arrow">▾</span></div><div class="acc-body">Ayuda a cumplir con la normativa fiscal vigente, reduciendo la probabilidad de sanciones, multas o problemas legales. Conocer los artículos 108 del CFF (defraudación fiscal) y 5-A (cláusula anti-abuso) es esencial para cualquier emprendedor.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Planificar mejor el negocio</span><span class="acc-arrow">▾</span></div><div class="acc-body">Facilita la organización financiera y fiscal, permitiendo proyectar ingresos, costos y obligaciones. Contribuye a una gestión eficiente al anticipar pagos de ISR, IVA y demás compromisos periódicos ante el SAT.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Fortalecer la confianza en el mercado</span><span class="acc-arrow">▾</span></div><div class="acc-body">Genera credibilidad ante clientes, proveedores e instituciones al demostrar cumplimiento fiscal y formalidad. Las empresas formales facturan 3.6 veces más que las informales, según la ASEM 2025.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Evasión vs. elusión fiscal</span><span class="acc-arrow">▾</span></div><div class="acc-body">La <strong>evasión</strong> implica ocultar ingresos de forma ilegal (artículo 108 del CFF). La <strong>elusión</strong> aprovecha vacíos legales para reducir la carga fiscal dentro de la ley, pero puede ser sancionada mediante la cláusula anti-abuso del artículo 5-A del CFF.</div></div>
+  </div>
+</div>
+
+<!-- OBLIGACIONES FISCALES -->
+<div id="fiscal" class="section">
+  <div class="content">
+    <div class="sec-header">
+      <div class="sec-tag">Módulo 2</div>
+      <div class="sec-title">Obligaciones Fiscales para Emprendedores</div>
+      <p class="sec-desc">El régimen fiscal es la forma legal en la que una persona física o moral tributa ante el SAT. Define cómo facturar, qué impuestos pagar y cómo presentar declaraciones.</p>
+    </div>
+    <div class="info-block"><h3>Inscripción al RFC — Base legal</h3><p>El artículo 27 del Código Fiscal de la Federación establece que las personas físicas deben inscribirse en el RFC dentro de los 30 días naturales de iniciar actividades. Las personas morales deben hacerlo antes de su primera operación. El incumplimiento puede generar multas y restricción de sellos digitales.</p></div>
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Regímenes fiscales para emprendedores</div>
+
+    <div class="regime-card">
+      <div class="regime-num">Régimen 601</div>
+      <h3>Régimen General de Ley — Personas Morales</h3>
+      <p>Es el régimen base para la mayoría de las empresas mexicanas. <strong>Más del 80% de las nuevas empresas en México se registran inicialmente bajo este régimen.</strong> Aplica a todas las personas morales con fines de lucro: Sociedades Anónimas (S.A. de C.V.), Sociedades de Responsabilidad Limitada (S. de R.L.), cooperativas, sociedades mercantiles y civiles, entre otras.</p>
+      <div class="tag-list"><span class="tag">Tasa ISR 30%</span><span class="tag">Contabilidad electrónica obligatoria</span><span class="tag">Pagos provisionales mensuales</span><span class="tag">Declaración anual</span><span class="tag">DIOT informativa</span><span class="tag">Sin límite de ingresos</span></div>
+      <p style="margin-top:0.8rem;font-size:12px;color:var(--text-light);">Requiere acta constitutiva notariada, mayor control contable y asesoría fiscal profesional. Permite deducir gastos operativos, inversiones en activos fijos y otros conceptos autorizados por la LISR.</p>
+    </div>
+    <div class="regime-card">
+      <div class="regime-num">Régimen 626 — RESICO</div>
+      <h3>Régimen Simplificado de Confianza</h3>
+      <p>Ideal para emprendedores que inician solos. Tasas reducidas del 1% al 2.5% sobre ingresos para personas físicas con hasta <strong>$3.5 millones de pesos anuales</strong>. Declaraciones pre-llenadas por el SAT. Vigente desde 2022.</p>
+      <div class="tag-list"><span class="tag">Tasa ISR 1%–2.5%</span><span class="tag">Persona física</span><span class="tag">Declaración simplificada</span><span class="tag">Sin deducciones personales</span></div>
+    </div>
+    <div class="regime-card">
+      <div class="regime-num">Régimen 612</div>
+      <h3>Actividades Empresariales y Profesionales</h3>
+      <p>Para profesionistas independientes: contadores, abogados, consultores, médicos. Permite deducir gastos estrictamente indispensables. IVA al 16% con declaración mensual. Declaración anual obligatoria hasta el 30 de abril.</p>
+      <div class="tag-list"><span class="tag">Profesionistas independientes</span><span class="tag">IVA 16% mensual</span><span class="tag">Deducciones permitidas</span><span class="tag">Declaración anual abril</span></div>
+    </div>
+    <div class="regime-card">
+      <div class="regime-num">Régimen 625</div>
+      <h3>Plataformas Tecnológicas</h3>
+      <p>Para quienes generan ingresos a través de apps digitales: conductores de plataformas, ventas en línea, creación de contenido. Las plataformas retienen ISR e IVA automáticamente, lo que puede considerarse pago definitivo en ciertos casos.</p>
+      <div class="tag-list"><span class="tag">Apps y e-commerce</span><span class="tag">Retención automática</span><span class="tag">Creadores de contenido</span></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Comparativa de regímenes</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Régimen</th><th>Tipo</th><th>Ingresos máx.</th><th>ISR</th><th>Deducciones</th><th>Ideal para</th></tr></thead>
+        <tbody>
+          <tr><td><strong>601 — General</strong></td><td>Persona moral</td><td>Sin límite</td><td>30% fijo</td><td>Sí, amplias</td><td>Empresas constituidas, S.A. de C.V., socios</td></tr>
+          <tr><td><strong>626 — RESICO</strong></td><td>Persona física</td><td>$3.5 millones</td><td>1%–2.5%</td><td>No</td><td>Emprendedores que inician, freelancers</td></tr>
+          <tr><td><strong>612 — Empresarial</strong></td><td>Persona física</td><td>Sin límite</td><td>Provisional mensual</td><td>Sí, indispensables</td><td>Profesionistas independientes</td></tr>
+          <tr><td><strong>625 — Plataformas</strong></td><td>Persona física</td><td>Sin límite</td><td>Retención automática</td><td>Limitadas</td><td>Ingresos digitales, creadores de contenido</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box"><p>¿Cómo elegir? Si emprendes <strong>solo con ingresos moderados</strong> → RESICO (626). Si eres <strong>profesionista con gastos deducibles</strong> → Régimen 612. Si generas ingresos en <strong>plataformas digitales</strong> → Régimen 625. Si vas a <strong>constituir una empresa con socios</strong> → Régimen 601.</p></div>
+    <div class="divider"></div>
+    <div class="two-col">
+      <div class="info-block"><h3>Emisión de CFDI — Artículos 29 y 29-A del CFF</h3><p>Los comprobantes fiscales digitales son obligatorios por cada ingreso. Sin cumplir los requisitos del CFF el CFDI no tiene validez fiscal. Deben emitirse dentro de los plazos establecidos, respaldados por un PAC (Proveedor Autorizado de Certificación).</p></div>
+      <div class="info-block"><h3>Decreto IVA 8% en zona fronteriza</h3><p>En Piedras Negras y otras ciudades fronterizas aplica una tasa reducida de IVA del 8% en lugar del 16% general, como estímulo al comercio en la frontera norte. Verifica las actividades específicas que aplican según el decreto vigente.</p></div>
+    </div>
+    <div class="sec-tag" style="margin:1.5rem 0 1rem;">Beneficios de la formalidad</div>
+    <div class="cards-grid">
+      <div class="card"><h3>Acceso a créditos</h3><p>Financiamiento con condiciones preferenciales de instituciones bancarias para impulsar el crecimiento.</p></div>
+      <div class="card"><h3>Crecimiento del negocio</h3><p>Acceso a licitaciones, clientes corporativos y oportunidades exclusivas para empresas formales.</p></div>
+      <div class="card"><h3>Confianza del cliente</h3><p>Credibilidad al demostrar formalidad, transparencia y cumplimiento ante clientes y proveedores.</p></div>
+      <div class="card"><h3>Seguridad jurídica</h3><p>Respaldo legal que protege las actividades del emprendedor y reduce riesgos ante posibles conflictos.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- EMPRENDIMIENTO -->
+<div id="emprendimiento" class="section">
+  <div class="content">
+    <div class="sec-header">
+      <div class="sec-tag">Módulo 3</div>
+      <div class="sec-title">Emprendimiento en México</div>
+      <p class="sec-desc">Panorama actual, principales retos, competencias clave e ideas de negocio concretas para egresados de la UAdeC.</p>
+    </div>
+    <div class="info-block"><h3>¿Qué significa emprender en México hoy?</h3><p>Emprender va más allá de iniciar un negocio. Implica detectar oportunidades en un mercado dinámico, adaptarse a un entorno competitivo y responder a una economía cada vez más digitalizada. México ocupa el cuarto lugar en América Latina en presencia emprendedora, siendo referente en fintech, edtech, comercio electrónico y movilidad.</p></div>
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Principales retos del emprendimiento</div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Falta de conocimiento del mercado — 35.8% de fracasos</span><span class="acc-arrow">▾</span></div><div class="acc-body">Más de un tercio de los negocios que cierran reconocen no haber entendido a su mercado objetivo. Analizar la competencia, definir el cliente ideal y validar la demanda son pasos esenciales antes de lanzar.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Falta de liquidez</span><span class="acc-arrow">▾</span></div><div class="acc-body">La falta de capital de trabajo y pagos tardíos afectan a cerca de un tercio de las empresas. La formalización facilita el acceso a créditos con condiciones preferenciales que pueden resolver este problema.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Conflictos entre socios — 28% de cierres</span><span class="acc-arrow">▾</span></div><div class="acc-body">Los problemas societarios son una de las principales causas de cierre. Sin embargo, las empresas con más de un socio facturan 2.2 veces más que las unipersonales. Formalizar acuerdos con contratos claros desde el inicio es clave.</div></div>
+    <div class="accordion"><div class="acc-header" onclick="toggleAcc(this)"><span>Mala administración y acceso a financiamiento</span><span class="acc-arrow">▾</span></div><div class="acc-body">La ausencia de procesos claros y planeación financiera es un factor crítico de fracaso. Casi una cuarta parte de las empresas abandona su actividad al no encontrar alternativas de financiamiento. Las empresas que adoptan herramientas digitales facturan 4.8 veces más.</div></div>
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Competencias emprendedoras clave</div>
+    <div class="cards-grid">
+      <div class="card"><h3>Creatividad</h3><p>Generar ideas innovadoras y soluciones originales. Facilita la adaptación al entorno y el desarrollo de propuestas de valor diferenciadas en el mercado.</p></div>
+      <div class="card"><h3>Toma de decisiones</h3><p>Elegir alternativas estratégicas con base en análisis de información, actuando con seguridad y reduciendo riesgos en la gestión.</p></div>
+      <div class="card"><h3>Liderazgo</h3><p>Dirigir, motivar y coordinar equipos de trabajo, favoreciendo el cumplimiento de objetivos organizacionales.</p></div>
+      <div class="card"><h3>Gestión financiera</h3><p>Administrar recursos económicos, controlar ingresos y gastos, y asegurar la viabilidad y estabilidad financiera.</p></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-tag" style="margin-bottom:1rem;">Ideas de emprendimiento por carrera</div>
+    <div class="carrera-tabs">
+      <div class="ctab active" onclick="showCarrera('cont', this)">Contabilidad</div>
+      <div class="ctab"        onclick="showCarrera('adm',  this)">Administración</div>
+      <div class="ctab"        onclick="showCarrera('der',  this)">Derecho</div>
+    </div>
+    <div id="cont" class="carrera-panel active">
+      <div class="cards-grid">
+        <div class="card"><h3>Asesoría fiscal básica</h3><p>Orientar a pequeños contribuyentes sobre obligaciones fiscales y registro ante el SAT.</p></div>
+        <div class="card"><h3>Declaraciones periódicas</h3><p>Calcular y presentar declaraciones mensuales y anuales para personas físicas con actividades económicas.</p></div>
+        <div class="card"><h3>Control contable básico</h3><p>Registros contables para emprendedores que mejoren la toma de decisiones financieras.</p></div>
+        <div class="card"><h3>Contenido fiscal en redes</h3><p>TikTok o YouTube explicando temas fiscales de forma sencilla, monetizando con asesorías.</p></div>
+        <div class="card"><h3>Facturación electrónica</h3><p>Apoyar a negocios en emisión de CFDI conforme a los artículos 29 y 29-A del CFF.</p></div>
+      </div>
+    </div>
+    <div id="adm" class="carrera-panel">
+      <div class="cards-grid">
+        <div class="card"><h3>Consultoría para pymes</h3><p>Asesorar en mejora de procesos y estrategias para optimizar el funcionamiento de pequeños negocios.</p></div>
+        <div class="card"><h3>Gestión de redes sociales</h3><p>Administrar cuentas digitales de negocios y fortalecer su presencia en línea.</p></div>
+        <div class="card"><h3>Organización de eventos</h3><p>Planificar y coordinar eventos sociales o empresariales gestionando recursos y logística.</p></div>
+        <div class="card"><h3>Contenido sobre emprendimiento</h3><p>Compartir consejos y estrategias de negocio en plataformas digitales con monetización.</p></div>
+        <div class="card"><h3>Planes de negocio</h3><p>Elaborar planes estructurados con análisis de mercado y proyecciones financieras de crecimiento.</p></div>
+      </div>
+    </div>
+    <div id="der" class="carrera-panel">
+      <div class="cards-grid">
+        <div class="card"><h3>Asesoría legal básica</h3><p>Orientar jurídicamente a emprendedores sobre contratos, derechos y obligaciones legales.</p></div>
+        <div class="card"><h3>Elaboración de contratos</h3><p>Redactar documentos legales para formalizar acuerdos comerciales entre partes.</p></div>
+        <div class="card"><h3>Orientación jurídica</h3><p>Asistir en dudas legales sobre actividades comerciales, arrendamientos o relaciones laborales.</p></div>
+        <div class="card"><h3>Contenido legal en redes</h3><p>Explicar temas legales en TikTok o YouTube, generando ingresos mediante asesorías.</p></div>
+        <div class="card"><h3>Cumplimiento normativo</h3><p>Apoyar a negocios en la identificación y cumplimiento de requisitos legales para operar formalmente.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GUÍA PRÁCTICA -->
+<div id="guia" class="section">
+  <div class="content">
+    <div class="sec-header">
+      <div class="sec-tag">Módulo 4</div>
+      <div class="sec-title">¿Cómo iniciar un negocio formal?</div>
+      <p class="sec-desc">Ruta completa desde la idea hasta el cumplimiento de obligaciones, incluyendo cómo validar tu idea con un análisis de mercado.</p>
+    </div>
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Idea de negocio</h4><p>Identifica una oportunidad real: ¿qué problema resuelves?, ¿existe demanda?, ¿tienes las habilidades para ejecutarlo? La idea debe responder a una necesidad concreta del mercado.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Validación: análisis de mercado</h4><p>Antes de invertir, valida tu idea. Un análisis de mercado te da información sobre el sector, la competencia y la demanda específica de tu producto o servicio. Ver la sección de análisis de mercado más abajo.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Obtén tu RFC</h4><p>Agenda cita en <strong>citas.sat.gob.mx</strong>. Lleva CURP, identificación oficial y comprobante de domicilio. Para persona moral: acta constitutiva notariada y poder del representante legal.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Tramita tu e.firma</h4><p>Requiere cita en el SAT. Vigencia de 4 años, debe renovarse periódicamente. Indispensable para trámites digitales y operaciones en el portal del SAT.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h4>Elige tu régimen fiscal</h4><p>¿Solo, ingresos moderados? → RESICO (626). ¿Profesionista con gastos deducibles? → Régimen 612. ¿Con socios y empresa constituida? → Régimen 601. ¿Ingresos digitales? → Régimen 625.</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><h4>Activa obligaciones y buzón tributario</h4><p>Activa las obligaciones correspondientes a tu régimen. El buzón tributario es el canal oficial de comunicación con el SAT y es obligatorio tenerlo habilitado.</p></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><h4>Emite tu primer CFDI</h4><p>Contrata un PAC (Proveedor Autorizado de Certificación). Algunos son gratuitos para bajos volúmenes. Los artículos 29 y 29-A del CFF establecen los requisitos de validez de cada factura.</p></div></div>
+    <div class="step"><div class="step-num">8</div><div class="step-body"><h4>Contabilidad electrónica y administración</h4><p>Obligatoria para la mayoría de contribuyentes. Usa Mi Contabilidad SAT (gratuita para RESICO), Aspel o CONTPAQi. Las empresas que adoptan herramientas digitales facturan 4.8 veces más.</p></div></div>
+
+    <div class="divider"></div>
+    <div class="sec-header" style="border-bottom:none;padding-bottom:0;">
+      <div class="sec-tag">Análisis de mercado — paso clave</div>
+      <div class="sec-title">¿Cómo validar tu idea de negocio?</div>
+      <p class="sec-desc">Un análisis de mercado proporciona información sobre el sector, la competencia y la demanda de un producto o servicio específico. Es la base para tomar decisiones estratégicas antes de invertir.</p>
+    </div>
+    <div class="market-grid">
+      <div class="market-step"><div class="market-icon">🔍</div><div><h4>Identifica necesidades del mercado</h4><p>Analiza problemáticas o demandas existentes. ¿Existe una necesidad real que tu producto puede resolver mejor que la competencia?</p></div></div>
+      <div class="market-step"><div class="market-icon">📊</div><div><h4>Analiza la competencia</h4><p>Estudia negocios similares: fortalezas, debilidades, precios y estrategias. Identifica oportunidades de diferenciación.</p></div></div>
+      <div class="market-step"><div class="market-icon">👤</div><div><h4>Define tu cliente objetivo</h4><p>Identifica el perfil específico del consumidor: edad, nivel de ingresos, necesidades y hábitos de consumo.</p></div></div>
+      <div class="market-step"><div class="market-icon">💰</div><div><h4>Evalúa costos y ganancias</h4><p>Estima costos de operación vs. ingresos esperados. Determina la rentabilidad y sostenibilidad del negocio.</p></div></div>
+      <div class="market-step"><div class="market-icon">📐</div><div><h4>Dimensiona el mercado</h4><p>¿Cuántas personas podrían ser tus clientes? Un nicho pequeño bien atendido puede ser muy rentable.</p></div></div>
+      <div class="market-step"><div class="market-icon">⚡</div><div><h4>Valida con datos reales</h4><p>Encuestas, entrevistas, pruebas piloto o ventas en pequeño. La validación real reduce el riesgo antes de escalar.</p></div></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="two-col">
+      <div class="info-block">
+        <h3>Herramientas oficiales del SAT</h3>
+        <ul>
+          <li><strong>sat.gob.mx</strong> — Declaraciones, facturas, buzón tributario</li>
+          <li><strong>SAT Móvil</strong> — App para declaraciones y consultas rápidas</li>
+          <li><strong>Mi Contabilidad SAT</strong> — Gratuita para personas físicas del RESICO</li>
+          <li><strong>citas.sat.gob.mx</strong> — Agenda tu cita para RFC y e.firma</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <h3>Preguntas clave antes de emprender</h3>
+        <ul>
+          <li>¿Vas a emprender solo o con socios?</li>
+          <li>¿Ofreces un servicio profesional o vendes productos?</li>
+          <li>¿Esperas crecer rápidamente en ingresos?</li>
+          <li>¿Tendrás empleados desde el inicio?</li>
+          <li>¿Qué tan formal quieres estructurar tu negocio?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box"><p>Las empresas <strong>formalmente establecidas</strong> facturan 3.6x más. Las que adoptan <strong>herramientas digitales</strong> facturan 4.8x más. El <strong>emprendimiento con socios</strong> genera 2.2x más. La formalidad no es un costo — es tu ventaja competitiva. — ASEM, Radiografía del Emprendimiento en México 2025</p></div>
+  </div>
+</div>
+
+<footer>
+  <span>EmprendeTributario MX</span> &nbsp;·&nbsp;
+  Propuesta de Tesis · Milly Rocha &nbsp;·&nbsp;
+  Universidad Autónoma de Coahuila · Facultad de Administración, Contabilidad y Derecho
+  &nbsp;·&nbsp; Piedras Negras, Coahuila, 2026
+</footer>
+
+<script>
+  const sectionMap = { inicio:0, cultura:1, fiscal:2, emprendimiento:3, guia:4 };
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-link')[sectionMap[id]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function toggleAcc(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.acc-arrow');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.classList.toggle('open', !isOpen);
+  }
+  function showCarrera(id, tab) {
+    document.querySelectorAll('.carrera-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    tab.classList.add('active');
+  }
+</script>
+</body>
+</html>
