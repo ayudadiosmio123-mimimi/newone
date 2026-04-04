@@ -1,82 +1,43 @@
 // ═══════════════════════════════════════════════════════
-//  EmprendeTributario MX — Asistente Inteligente
-//  3-layer validation: JSON check → Main model → Validator
+//  EmprendeTributario MX — Asistente Inteligente v2
+//  Architecture: single API call — model checks topic
+//  AND answers in one shot. No local keyword layer.
 // ═══════════════════════════════════════════════════════
 
 (function () {
 
   // ─────────────────────────────────────────────────────
-  //  CONFIG  ← paste your OpenRouter key here
+  //  CONFIG
   // ─────────────────────────────────────────────────────
-
-    var secretPart1 = 'sk-or-v1-';
-    var secretPart2 = 'fe779453408989421c8bbf2a5785c7df723e25cbb5d51fe639db07e1d2dadf47';
-    var CFG = {
-    API_KEY:         secretPart1 + secretPart2,
-    // Updated 2026 stable free models
-    MAIN_MODEL:      'openrouter/free', 
-    VALIDATOR_MODEL: 'openrouter/free',
-    API_URL:         'https://openrouter.ai/api/v1/chat/completions',
-    MAX_TOKENS:      600,
-    SCORE_THRESHOLD: 1
-    };
-
-  // ─────────────────────────────────────────────────────
-  //  LAYER 1 — Topic validation data (JSON)
-  //  Score: each keyword hit = +1. If total >= SCORE_THRESHOLD → pass.
-  //  If ANY hard_block keyword found → instant reject regardless of score.
-  // ─────────────────────────────────────────────────────
-  var TOPIC_DATA = {
-
-    // Keywords that strongly indicate an on-topic question (ES + EN)
-    allowed_keywords: [
-      // Fiscal / Tax
-      'rfc','sat','curp','impuesto','isr','iva','cfdi','cff','resico','régimen','regimen',
-      'fiscal','tributari','contribuy','declaraci','factura','pac','buzón','buzon',
-      'deduc','retenci','retencion','contabilidad','e.firma','efirma','sello digital',
-      'csd','rmf','evasion','evasión','fraude fiscal','art.','artículo','articulo',
-      'persona física','persona moral','sa de cv','sociedad','constituci',
-      'obligacion','obligación','pago provisional','annual','anual','mensual',
-      'plataforma digital','625','626','612','601','zona fronteriza','piedras negras',
-      'tax','taxes','tax law','mexican tax','invoice','income tax','vat',
-      'taxpayer','fiscal regime','tax culture','sat portal','tax authority',
-      // Emprendimiento / Entrepreneurship
-      'emprender','emprendedor','emprendimiento','negocio','empresa','startup',
-      'plan de negocio','validar','validación','mercado','competencia','cliente',
-      'producto','servicio','ingresos','gastos','rentabilidad','financiamiento',
-      'crédito','credito','formalizar','formalización','registro','constituir',
-      'socio','contrato','licitación','licitacion','pyme','freelance','autoempleo',
-      'idea de negocio','análisis de mercado','analisis de mercado','modelo de negocio',
-      'entrepreneurship','business','startup','revenue','market','competitor',
-      'formalize','register','income','expenses','profit','partner','contract',
-      // UAdeC context
-      'uadec','administracion','administración','contabilidad','derecho',
-      'egresado','estudiante','universidad','facultad','tesis','milly','rocha'
-    ],
-
-    // If any of these appear → reject immediately (off-topic hard block)
-    hard_block: [
-      'receta','cocina','futbol','fútbol','deporte','película','pelicula',
-      'cancion','canción','música','musica','chiste','amor','relación','relacion',
-      'videojuego','juego','game','sport','movie','recipe','music','song',
-      'weather','clima','tiempo','noticias ajenas','política ajena'
-    ],
-
-    // Friendly off-topic reply (shown immediately, no API call)
-    off_topic_reply:
-      'Lo siento, solo puedo ayudarte con temas de <strong>emprendimiento</strong> ' +
-      'y <strong>cultura tributaria en México</strong>. 😊<br><br>' +
-      '¿Tienes alguna pregunta sobre el SAT, RFC, RESICO, CFDI o cómo formalizar tu negocio?',
-
-    // Fallback when validator rejects the main model response
-    validation_fail_reply:
-      'No pude generar una respuesta adecuada para esa pregunta. ' +
-      'Por favor intenta reformularla enfocándote en <strong>emprendimiento</strong> ' +
-      'o <strong>obligaciones fiscales en México</strong>.'
+  var first_part = 'sk-or-v1-'
+  var second_part = 'fe779453408989421c8bbf2a5785c7df723e25cbb5d51fe639db07e1d2dadf47'
+  var CFG = {
+    API_KEY:    first_part + second_part,
+    // Best free model for Spanish / multilingual knowledge (Apr 2026)
+    // Alternatives if this hits rate limits:
+    //   'meta-llama/llama-4-maverick:free'
+    //   'meta-llama/llama-3.3-70b-instruct:free'
+    //   'mistralai/mistral-small-3.1-24b-instruct:free'
+    MODEL:      'deepseek/deepseek-chat-v3-0324:free',
+    API_URL:    'https://openrouter.ai/api/v1/chat/completions',
+    MAX_TOKENS: 700,
+    SITE_URL:   window.location.origin || 'http://localhost:5500',
+    SITE_NAME:  'EmprendeTributario MX'
   };
 
   // ─────────────────────────────────────────────────────
-  //  SYSTEM PROMPT — sent to main model every request
+  //  OFF-TOPIC reply shown to the user
+  // ─────────────────────────────────────────────────────
+  var OFF_TOPIC_MSG =
+    'Lo siento, solo puedo ayudarte con temas de <strong>emprendimiento</strong> ' +
+    'y <strong>cultura tributaria en México</strong>. 😊<br><br>' +
+    '¿Tienes alguna pregunta sobre el SAT, RFC, RESICO, CFDI o cómo formalizar tu negocio?';
+
+  // ─────────────────────────────────────────────────────
+  //  SYSTEM PROMPT
+  //  The model acts as topic-checker AND responder in one.
+  //  If off-topic → it must return exactly: FUERA_DE_TEMA
+  //  If on-topic  → it answers directly, no prefix needed.
   // ─────────────────────────────────────────────────────
   var SYSTEM_PROMPT =
     'Eres el Asistente Inteligente de EmprendeTributario MX, ' +
@@ -84,54 +45,58 @@
     'Piedras Negras, Coahuila, México, 2026. ' +
     'Eres amable, profesional y motivador.\n\n' +
 
-    'REGLA ABSOLUTA: Solo responde preguntas sobre:\n' +
-    '- Emprendimiento en México (validar ideas, mercado, plan de negocio, formalización).\n' +
-    '- Cultura tributaria y leyes fiscales mexicanas (RFC, RESICO, IVA, CFDI, SAT, etc.).\n' +
-    'Si la pregunta es ajena a estos temas, responde EXACTAMENTE:\n' +
-    '"FUERA_DE_TEMA"\n' +
-    'No añadas nada más.\n\n' +
+    '── PASO 1: EVALÚA EL TEMA ──\n' +
+    'Antes de responder, decide si la pregunta del usuario está relacionada ' +
+    'con alguno de estos temas:\n' +
+    '• Impuestos mexicanos, SAT, RFC, CFDI, ISR, IVA, RESICO, regímenes fiscales, CFF, RMF\n' +
+    '• Emprendimiento, negocios, startups, formalización de empresas en México\n' +
+    '• Contabilidad, administración o derecho aplicados a emprendedores\n' +
+    '• Cualquier tema relacionado con finanzas, obligaciones fiscales o crear un negocio\n\n' +
 
-    'CONOCIMIENTO FISCAL CLAVE:\n' +
-    '- RFC: art. 27 CFF — inscripción en 30 días naturales.\n' +
-    '- RESICO (626): ISR 1%–2.5%, hasta $3.5 M anuales, personas físicas.\n' +
-    '- Régimen 601: ISR 30% personas morales (SA de C.V.).\n' +
-    '- Régimen 612: profesionistas independientes (contadores, abogados).\n' +
-    '- Régimen 625: plataformas digitales, apps, creadores de contenido.\n' +
-    '- CFDI: arts. 29 y 29-A CFF — obligatorio, requiere PAC.\n' +
-    '- IVA: 16% general; 8% en Piedras Negras (zona fronteriza).\n' +
-    '- Evasión fiscal: art. 108 CFF — delito grave.\n' +
-    '- RMF 2026: CFDI deben amparar operaciones reales.\n\n' +
+    '── PASO 2: ACTÚA SEGÚN EL RESULTADO ──\n' +
+    'Si la pregunta ES relevante → responde directamente de forma clara y útil.\n' +
+    'Si la pregunta NO es relevante → responde ÚNICAMENTE con el texto exacto:\n' +
+    'FUERA_DE_TEMA\n' +
+    'Nada más. Sin explicaciones adicionales.\n\n' +
 
-    'ESTILO:\n' +
-    '- Responde en español salvo que el usuario escriba en inglés.\n' +
-    '- Sé conciso, claro y usa **negritas** para términos clave.\n' +
-    '- NUNCA sugieras evasión fiscal.';
+    '── CONOCIMIENTO FISCAL CLAVE ──\n' +
+    '• RFC: art. 27 CFF — inscripción en 30 días naturales tras inicio de actividades.\n' +
+    '• RESICO (Régimen 626): ISR del 1% al 2.5% sobre ingresos, límite $3.5 M anuales, solo personas físicas.\n' +
+    '• Régimen 601 (General de Ley Personas Morales): ISR 30%, para SA de C.V. y similares.\n' +
+    '• Régimen 612 (Actividades Empresariales y Profesionales): para profesionistas independientes — contadores, abogados, consultores.\n' +
+    '• Régimen 625 (Plataformas Digitales): creadores de contenido, apps, marketplace, e-commerce.\n' +
+    '• CFDI: arts. 29 y 29-A del CFF — obligatorio emitir factura electrónica por cada ingreso; requiere PAC autorizado.\n' +
+    '• IVA: 16% tasa general; 8% en zona fronteriza (incluida Piedras Negras, Coahuila).\n' +
+    '• Evasión fiscal: art. 108 CFF — delito grave con penas de prisión.\n' +
+    '• RMF 2026: los CFDI deben amparar operaciones reales con razón de negocios demostrable.\n' +
+    '• e.firma: vigencia 4 años, renovar antes de vencer; indispensable para trámites SAT.\n' +
+    '• Buzón tributario: obligatorio activarlo; canal oficial SAT–contribuyente.\n' +
+    '• Pago provisional ISR: mensual para la mayoría de régimenes.\n' +
+    '• Contabilidad electrónica: obligatoria y enviada al SAT vía buzón tributario.\n\n' +
+
+    '── ESTILO DE RESPUESTA ──\n' +
+    '• Responde en español salvo que el usuario escriba en inglés.\n' +
+    '• Sé conciso, claro y usa **negritas** para términos clave (el sistema los convierte en HTML).\n' +
+    '• Puedes usar listas con guiones para mayor claridad.\n' +
+    '• NUNCA sugieras evasión fiscal ni información que viole la ley.';
 
   // ─────────────────────────────────────────────────────
-  //  VALIDATOR PROMPT — sent to validator model
+  //  Conversation history (last 10 exchanges = 20 msgs)
   // ─────────────────────────────────────────────────────
-  var VALIDATOR_PROMPT =
-    'You are a strict content validator. ' +
-    'A user asked a question about Mexican taxes or entrepreneurship, ' +
-    'and an AI provided a response. ' +
-    'Your job: decide if the response is appropriate, on-topic, and helpful. ' +
-    'Reply with ONLY one word: VALID or INVALID. ' +
-    'Reply INVALID if the response: contains harmful info, suggests tax evasion, ' +
-    'is completely off-topic, or is empty/incoherent. ' +
-    'Reply VALID otherwise. No other words.';
+  var history = [];
 
   // ─────────────────────────────────────────────────────
   //  0. Font Awesome
   // ─────────────────────────────────────────────────────
   if (!document.getElementById('fa-cdn')) {
     var fa = document.createElement('link');
-    fa.id  = 'fa-cdn'; fa.rel = 'stylesheet';
+    fa.id = 'fa-cdn'; fa.rel = 'stylesheet';
     fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
     document.head.appendChild(fa);
   }
 
   // ─────────────────────────────────────────────────────
-  //  1. Styles
+  //  1. Styles (injected — no extra CSS file needed)
   // ─────────────────────────────────────────────────────
   var style = document.createElement('style');
   style.textContent = [
@@ -181,293 +146,171 @@
     'font-size:13.5px;line-height:1.65;word-break:break-word;}',
     '.cb-time{font-size:10px;color:rgba(255,255,255,0.2);text-align:center;user-select:none;}',
 
-    '.cb-typing{display:flex;gap:5px;padding:3px 0;align-items:center;}',
-    '.cb-dot-anim{width:7px;height:7px;background:#C9A84C;border-radius:50%;',
-    'animation:cbBlink 1.3s infinite;opacity:0.7;}',
-    '.cb-dot-anim:nth-child(2){animation-delay:.22s;}',
-    '.cb-dot-anim:nth-child(3){animation-delay:.44s;}',
-    '@keyframes cbBlink{0%,60%,100%{transform:translateY(0);opacity:.7;}',
-    '30%{transform:translateY(-5px);opacity:1;}}',
+    '#cb-typing{align-self:flex-start;display:none;gap:5px;padding:10px 14px;',
+    'background:#1a2235;border:1px solid #1e3a5f;border-radius:4px 14px 14px 14px;}',
+    '#cb-typing span{width:7px;height:7px;background:#C9A84C;border-radius:50%;',
+    'display:inline-block;animation:cb-bounce 1.2s ease-in-out infinite;}',
+    '#cb-typing span:nth-child(2){animation-delay:.2s;}',
+    '#cb-typing span:nth-child(3){animation-delay:.4s;}',
+    '@keyframes cb-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}',
 
-    '#cb-foot{padding:10px 12px 13px;border-top:1px solid #1A2E44;',
-    'background:#0D1B2A;flex-shrink:0;}',
-    '#cb-input-row{display:flex;gap:8px;align-items:flex-end;background:#1a2235;',
-    'border:1px solid #243047;border-radius:10px;padding:9px 12px;transition:border-color .2s;}',
-    '#cb-input-row:focus-within{border-color:#C9A84C;}',
-    '#cb-textarea{flex:1;background:transparent;border:none;outline:none;color:#f1f5f9;',
-    'font-size:13.5px;resize:none;max-height:80px;line-height:1.45;font-family:inherit;}',
-    '#cb-textarea::placeholder{color:#475569;}',
-    '#cb-send{width:36px;height:36px;background:#C9A84C;border:none;border-radius:8px;',
-    'cursor:pointer;color:#0D1B2A;font-size:14px;flex-shrink:0;',
-    'display:flex;align-items:center;justify-content:center;',
-    'transition:background .2s,transform .15s;}',
-    '#cb-send:hover{background:#E8CC7A;transform:scale(1.06);}',
-    '#cb-send:active{transform:scale(0.95);}',
+    '.cb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}',
+    '.cb-chip{background:rgba(201,168,76,0.08);color:#C9A84C;',
+    'border:1px solid rgba(201,168,76,0.3);padding:4px 11px;border-radius:20px;',
+    'font-size:11px;cursor:pointer;transition:background .15s;white-space:nowrap;}',
+    '.cb-chip:hover{background:rgba(201,168,76,0.18);}',
+
+    '#cb-footer{padding:10px 12px;border-top:1px solid rgba(201,168,76,0.15);',
+    'background:#0D1B2A;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;}',
+    '#cb-input{flex:1;background:#1A2E44;border:1px solid rgba(201,168,76,0.25);',
+    'color:#e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;resize:none;',
+    'outline:none;max-height:80px;min-height:38px;line-height:1.5;font-family:inherit;',
+    'transition:border-color .2s;}',
+    '#cb-input:focus{border-color:rgba(201,168,76,0.55);}',
+    '#cb-input::placeholder{color:rgba(255,255,255,0.25);}',
+    '#cb-send{background:#C9A84C;border:none;color:#0D1B2A;width:36px;height:36px;',
+    'border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;',
+    'font-size:14px;transition:background .2s,transform .15s;flex-shrink:0;}',
+    '#cb-send:hover:not(:disabled){background:#E8CC7A;transform:scale(1.08);}',
     '#cb-send:disabled{opacity:0.45;cursor:not-allowed;transform:none;}',
-    '#cb-footer-note{text-align:center;font-size:10px;color:#2a4a6a;margin-top:8px;letter-spacing:.02em;}',
-    '#cb-layer-badge{font-size:9px;color:#2a4a6a;text-align:center;margin-top:4px;letter-spacing:.03em;}',
-    '@media(max-width:440px){#cb-box{width:calc(100vw - 24px);right:12px;height:480px;}',
-    '#cb-btn{right:12px;bottom:16px;}}'
+
+    '@media(max-width:440px){#cb-box{width:calc(100vw - 20px);right:10px;bottom:90px;}',
+    '#cb-btn{bottom:16px;right:16px;}}'
   ].join('');
   document.head.appendChild(style);
 
   // ─────────────────────────────────────────────────────
-  //  2. HTML
+  //  2. Build DOM
   // ─────────────────────────────────────────────────────
   var btn = document.createElement('button');
   btn.id = 'cb-btn';
-  btn.setAttribute('aria-label', 'Abrir asistente');
   btn.innerHTML = '<i class="fa-solid fa-comments"></i><span id="cb-dot"></span>';
+  btn.setAttribute('aria-label', 'Abrir asistente');
 
   var box = document.createElement('div');
-  box.id  = 'cb-box';
-  box.innerHTML =
-    '<div id="cb-head">' +
-      '<div id="cb-avatar"><i class="fa-solid fa-scale-balanced"></i></div>' +
-      '<div>' +
-        '<div id="cb-head-title">Asistente EmprendeTributario</div>' +
-        '<div id="cb-head-sub"><span id="cb-online-dot"></span> En línea &nbsp;·&nbsp; UAdeC 2026</div>' +
-      '</div>' +
-      '<button id="cb-close" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>' +
-    '</div>' +
-    '<div id="cb-msgs"></div>' +
-    '<div id="cb-foot">' +
-      '<div id="cb-input-row">' +
-        '<textarea id="cb-textarea" placeholder="Escribe tu pregunta..." rows="1"></textarea>' +
-        '<button id="cb-send" aria-label="Enviar"><i class="fa-solid fa-paper-plane"></i></button>' +
-      '</div>' +
-      '<div id="cb-footer-note">' +
-        '<i class="fa-solid fa-lock" style="font-size:9px;margin-right:3px;"></i>' +
-        'Milly Rocha &nbsp;·&nbsp; UAdeC &nbsp;·&nbsp; Piedras Negras &nbsp;·&nbsp; 2026' +
-      '</div>' +
-      '<div id="cb-layer-badge">' +
-        '<i class="fa-solid fa-shield-halved" style="font-size:9px;margin-right:3px;"></i>' +
-        'Validación en 3 capas activa' +
-      '</div>' +
-    '</div>';
+  box.id = 'cb-box';
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-label', 'Asistente EmprendeTributario');
+  box.innerHTML = [
+    '<div id="cb-head">',
+    '  <div id="cb-avatar"><i class="fa-solid fa-scale-balanced"></i></div>',
+    '  <div>',
+    '    <div id="cb-head-title">Asesor EmprendeTributario</div>',
+    '    <div id="cb-head-sub"><span id="cb-online-dot"></span>En línea · SAT · Emprendimiento</div>',
+    '  </div>',
+    '  <button id="cb-close" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>',
+    '</div>',
+    '<div id="cb-msgs" role="log" aria-live="polite"></div>',
+    '<div id="cb-footer">',
+    '  <textarea id="cb-input" rows="1" placeholder="Escribe tu pregunta..." aria-label="Mensaje"></textarea>',
+    '  <button id="cb-send" aria-label="Enviar"><i class="fa-solid fa-paper-plane"></i></button>',
+    '</div>'
+  ].join('');
 
   document.body.appendChild(btn);
   document.body.appendChild(box);
 
-  // ─────────────────────────────────────────────────────
-  //  3. References & state
-  // ─────────────────────────────────────────────────────
-  var msgs      = document.getElementById('cb-msgs');
-  var textarea  = document.getElementById('cb-textarea');
-  var sendBtn   = document.getElementById('cb-send');
-  var closeBtn  = document.getElementById('cb-close');
-  var dot       = document.getElementById('cb-dot');
-  var history   = [];   // conversation history for main model
-  var busy      = false;
-  var isOpen    = false;
-  var welcomed  = false;
+  var msgs    = document.getElementById('cb-msgs');
+  var textarea = document.getElementById('cb-input');
+  var sendBtn  = document.getElementById('cb-send');
+  var busy     = false;
 
   // ─────────────────────────────────────────────────────
-  //  4. Open / close
+  //  3. Open / close
   // ─────────────────────────────────────────────────────
-  function openChat() {
-    isOpen = true;
-    box.classList.add('cb-open');
-    dot.style.display = 'none';
-    setTimeout(function () { textarea.focus(); }, 260);
-  }
-  function closeChat() {
-    isOpen = false;
-    box.classList.remove('cb-open');
-  }
   btn.addEventListener('click', function () {
-    if (!isOpen) { showWelcome(); openChat(); } else closeChat();
+    var isOpen = box.classList.toggle('cb-open');
+    btn.querySelector('i').className = isOpen
+      ? 'fa-solid fa-xmark'
+      : 'fa-solid fa-comments';
+    if (isOpen && msgs.children.length === 0) {
+      showWelcome();
+      textarea.focus();
+    }
   });
-  closeBtn.addEventListener('click', closeChat);
+
+  document.getElementById('cb-close').addEventListener('click', function () {
+    box.classList.remove('cb-open');
+    btn.querySelector('i').className = 'fa-solid fa-comments';
+  });
 
   // ─────────────────────────────────────────────────────
-  //  5. UI helpers
+  //  4. Welcome message with quick-start chips
   // ─────────────────────────────────────────────────────
-  function timeLabel() {
-    var d = new Date();
-    return ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+  function showWelcome() {
+    var now = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    addTime(now);
+    var el = document.createElement('div');
+    el.className = 'cb-msg-bot';
+    el.innerHTML =
+      '¡Hola! 👋 Soy el asistente de <strong>EmprendeTributario MX</strong>.<br><br>' +
+      'Puedo ayudarte con tus dudas sobre <strong>impuestos en México</strong>, ' +
+      'el <strong>SAT</strong>, cómo <strong>formalizar tu negocio</strong> y mucho más.<br><br>' +
+      '¿Por dónde quieres empezar?<br>' +
+      '<div class="cb-chips">' +
+        '<span class="cb-chip" onclick="cbChip(this)">¿Qué es el RESICO?</span>' +
+        '<span class="cb-chip" onclick="cbChip(this)">¿Cómo obtengo mi RFC?</span>' +
+        '<span class="cb-chip" onclick="cbChip(this)">¿Qué régimen elegir?</span>' +
+        '<span class="cb-chip" onclick="cbChip(this)">¿Cómo emitir un CFDI?</span>' +
+        '<span class="cb-chip" onclick="cbChip(this)">Ideas de negocio para egresados</span>' +
+      '</div>';
+    msgs.appendChild(el);
+    scrollBottom();
   }
 
-  function addBotMsg(html) {
-    var div = document.createElement('div');
-    div.className = 'cb-msg-bot';
-    div.innerHTML = html;
-    msgs.appendChild(div);
-    addTime('<i class="fa-solid fa-robot" style="font-size:9px;opacity:.4;margin-right:3px;"></i>' + timeLabel());
-    msgs.scrollTop = msgs.scrollHeight;
-    return div;
+  // Chip click handler (global so onclick works)
+  window.cbChip = function (el) {
+    textarea.value = el.textContent;
+    sendMessage();
+  };
+
+  // ─────────────────────────────────────────────────────
+  //  5. Message helpers
+  // ─────────────────────────────────────────────────────
+  function addTime(t) {
+    var el = document.createElement('div');
+    el.className = 'cb-time';
+    el.textContent = t;
+    msgs.appendChild(el);
   }
 
   function addUserMsg(text) {
-    var div = document.createElement('div');
-    div.className = 'cb-msg-user';
-    div.textContent = text;
-    msgs.appendChild(div);
-    addTime(timeLabel() + ' <i class="fa-solid fa-check-double" style="font-size:9px;opacity:.4;margin-left:3px;"></i>');
-    msgs.scrollTop = msgs.scrollHeight;
+    var el = document.createElement('div');
+    el.className = 'cb-msg-user';
+    el.textContent = text;
+    msgs.appendChild(el);
+    scrollBottom();
   }
 
-  function addTime(html) {
-    var t = document.createElement('div');
-    t.className = 'cb-time';
-    t.innerHTML = html;
-    msgs.appendChild(t);
+  function addBotMsg(html) {
+    var el = document.createElement('div');
+    el.className = 'cb-msg-bot';
+    el.innerHTML = html;
+    msgs.appendChild(el);
+    scrollBottom();
   }
 
+  var typingEl = null;
   function showTyping() {
-    var wrap = document.createElement('div');
-    wrap.id = 'cb-typing-wrap';
-    wrap.className = 'cb-msg-bot';
-    wrap.innerHTML =
-      '<div class="cb-typing">' +
-        '<div class="cb-dot-anim"></div>' +
-        '<div class="cb-dot-anim"></div>' +
-        '<div class="cb-dot-anim"></div>' +
-      '</div>';
-    msgs.appendChild(wrap);
-    msgs.scrollTop = msgs.scrollHeight;
+    typingEl = document.createElement('div');
+    typingEl.id = 'cb-typing';
+    typingEl.style.display = 'flex';
+    typingEl.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(typingEl);
+    scrollBottom();
   }
 
   function hideTyping() {
-    var el = document.getElementById('cb-typing-wrap');
-    if (el) el.remove();
+    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+    typingEl = null;
+  }
+
+  function scrollBottom() {
+    msgs.scrollTop = msgs.scrollHeight;
   }
 
   // ─────────────────────────────────────────────────────
-  //  6. Welcome
-  // ─────────────────────────────────────────────────────
-  function showWelcome() {
-    if (welcomed) return;
-    welcomed = true;
-    addBotMsg(
-      '<i class="fa-solid fa-hand-wave" style="color:#C9A84C;margin-right:6px;"></i>' +
-      '¡Hola! Bienvenido al <strong>Asistente EmprendeTributario MX</strong>.<br><br>' +
-      'Estoy aquí para resolver tus dudas sobre <strong>emprendimiento</strong> y ' +
-      '<strong>cultura tributaria en México</strong>.<br><br>' +
-      '<i class="fa-solid fa-circle-check" style="color:#C9A84C;margin-right:5px;"></i>' +
-      '¿En qué puedo ayudarte hoy?'
-    );
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  LAYER 1 — Local JSON keyword score
-  //  Returns { pass: bool, reason: string }
-  // ─────────────────────────────────────────────────────
-  function layer1_jsonCheck(text) {
-    var lower = text.toLowerCase();
-
-    // Hard block check first
-    for (var i = 0; i < TOPIC_DATA.hard_block.length; i++) {
-      if (lower.indexOf(TOPIC_DATA.hard_block[i]) !== -1) {
-        return { pass: false, reason: 'hard_block:' + TOPIC_DATA.hard_block[i] };
-      }
-    }
-
-    // Keyword score
-    var score = 0;
-    for (var j = 0; j < TOPIC_DATA.allowed_keywords.length; j++) {
-      if (lower.indexOf(TOPIC_DATA.allowed_keywords[j]) !== -1) {
-        score++;
-      }
-    }
-
-    if (score >= CFG.SCORE_THRESHOLD) {
-      return { pass: true, reason: 'score:' + score };
-    }
-
-    // Very short messages (greetings, etc.) pass through to the main model
-    // because the system prompt itself will handle them
-    if (text.trim().split(' ').length <= 4) {
-      return { pass: true, reason: 'short_message' };
-    }
-
-    return { pass: false, reason: 'score_too_low:' + score };
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  LAYER 2 — Main model API call
-  //  Returns response string or 'FUERA_DE_TEMA'
-  // ─────────────────────────────────────────────────────
-    function layer2_mainModel(userText) {
-    var messages = [{ role: 'system', content: SYSTEM_PROMPT }]
-      .concat(history)
-      .concat([{ role: 'user', content: userText }]);
-
-    return fetch(CFG.API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + CFG.API_KEY,
-        'HTTP-Referer': 'http://localhost:5500', // Tells OpenRouter where the request is from
-        'X-Title': 'EmprendeTributario MX'        // Name of your University Project
-      },
-      body: JSON.stringify({
-        model: CFG.MAIN_MODEL,
-        messages: messages,
-        max_tokens: CFG.MAX_TOKENS
-      })
-    })
-    .then(function (r) { 
-      // If the provider is down, this will catch the error before parsing JSON
-      if (!r.ok) return r.json().then(err => { throw new Error(err.error.message || 'Provider Error'); });
-      return r.json(); 
-    })
-    .then(function (data) {
-      if (data.error) throw new Error(data.error.message);
-      var reply = '';
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        reply = data.choices[0].message.content || '';
-      }
-      return reply.trim();
-    });
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  LAYER 3 — Validator model
-  //  Returns true (valid) or false (invalid)
-  // ─────────────────────────────────────────────────────
-  function layer3_validate(userText, botReply) {
-    var validatorMessages = [
-      { role: 'system', content: VALIDATOR_PROMPT },
-      {
-        role: 'user',
-        content:
-          'User question: "' + userText + '"\n\n' +
-          'AI response: "' + botReply + '"\n\n' +
-          'Is this response VALID or INVALID? Reply with one word only.'
-      }
-    ];
-
-    return fetch(CFG.API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + CFG.API_KEY,
-        'HTTP-Referer': 'http://localhost:5500',
-        'X-Title': 'EmprendeTributario Validator'
-      },
-      body: JSON.stringify({
-        model: CFG.VALIDATOR_MODEL,
-        messages: validatorMessages,
-        max_tokens: 10
-      })
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      if (data.error) return true; // if validator fails, trust main model
-      var verdict = '';
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        verdict = (data.choices[0].message.content || '').trim().toUpperCase();
-      }
-      return verdict.indexOf('VALID') !== -1;
-    })
-    .catch(function () {
-      return true; // validator error → trust main model
-    });
-  }
-
-  // ─────────────────────────────────────────────────────
-  //  Format reply: convert **bold** and newlines to HTML
+  //  6. Format reply: **bold** and newlines → HTML
   // ─────────────────────────────────────────────────────
   function formatReply(text) {
     return text
@@ -479,7 +322,49 @@
   }
 
   // ─────────────────────────────────────────────────────
-  //  7. Main send flow (3 layers)
+  //  7. Single API call — model checks topic + answers
+  // ─────────────────────────────────────────────────────
+  function callModel(userText) {
+    var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+
+    // Include conversation history for context
+    history.forEach(function (m) { messages.push(m); });
+
+    messages.push({ role: 'user', content: userText });
+
+    return fetch(CFG.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + CFG.API_KEY,
+        'HTTP-Referer':  CFG.SITE_URL,
+        'X-Title':       CFG.SITE_NAME
+      },
+      body: JSON.stringify({
+        model:      CFG.MODEL,
+        messages:   messages,
+        max_tokens: CFG.MAX_TOKENS,
+        temperature: 0.7
+      })
+    })
+    .then(function (r) {
+      if (!r.ok) return r.json().then(function (e) {
+        throw new Error((e.error && e.error.message) || 'Error del proveedor');
+      });
+      return r.json();
+    })
+    .then(function (data) {
+      if (data.error) throw new Error(data.error.message);
+      var reply = '';
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        reply = (data.choices[0].message.content || '').trim();
+      }
+      return reply;
+    });
+  }
+
+  // ─────────────────────────────────────────────────────
+  //  8. Main send flow
   // ─────────────────────────────────────────────────────
   function sendMessage() {
     var text = textarea.value.trim();
@@ -493,58 +378,32 @@
     addUserMsg(text);
     showTyping();
 
-    // ── LAYER 1: local JSON check ──
-    var l1 = layer1_jsonCheck(text);
-
-    if (!l1.pass) {
-      hideTyping();
-      addBotMsg(
-        '<i class="fa-solid fa-circle-xmark" style="color:#f87171;margin-right:6px;"></i>' +
-        TOPIC_DATA.off_topic_reply
-      );
-      resetInput();
-      return;
-    }
-
-    // ── LAYER 2: main model ──
-    layer2_mainModel(text)
+    callModel(text)
       .then(function (reply) {
+        hideTyping();
 
-        // If main model itself decided it's off-topic
-        if (reply === 'FUERA_DE_TEMA' || reply === '') {
-          hideTyping();
+        // Model returned off-topic signal
+        if (!reply || reply === 'FUERA_DE_TEMA') {
           addBotMsg(
             '<i class="fa-solid fa-circle-xmark" style="color:#f87171;margin-right:6px;"></i>' +
-            TOPIC_DATA.off_topic_reply
+            OFF_TOPIC_MSG
           );
           resetInput();
           return;
         }
 
-        // ── LAYER 3: validator ──
-        layer3_validate(text, reply)
-          .then(function (isValid) {
-            hideTyping();
+        // All good — show the answer
+        addBotMsg(
+          '<i class="fa-solid fa-circle-check" style="color:#C9A84C;margin-right:6px;font-size:11px;"></i>' +
+          formatReply(reply)
+        );
 
-            if (!isValid) {
-              addBotMsg(
-                '<i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24;margin-right:6px;"></i>' +
-                TOPIC_DATA.validation_fail_reply
-              );
-            } else {
-              // All layers passed — show response
-              addBotMsg(
-                '<i class="fa-solid fa-circle-check" style="color:#C9A84C;margin-right:6px;font-size:11px;"></i>' +
-                formatReply(reply)
-              );
-              // Save to history for context
-              history.push({ role: 'user',      content: text  });
-              history.push({ role: 'assistant', content: reply });
-              // Keep history manageable (last 10 exchanges = 20 messages)
-              if (history.length > 20) history = history.slice(history.length - 20);
-            }
-            resetInput();
-          });
+        // Save to history for multi-turn context
+        history.push({ role: 'user',      content: text  });
+        history.push({ role: 'assistant', content: reply });
+        if (history.length > 20) history = history.slice(history.length - 20);
+
+        resetInput();
       })
       .catch(function (err) {
         hideTyping();
@@ -564,7 +423,7 @@
   }
 
   // ─────────────────────────────────────────────────────
-  //  8. Input listeners
+  //  9. Input listeners
   // ─────────────────────────────────────────────────────
   sendBtn.addEventListener('click', sendMessage);
 
