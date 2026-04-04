@@ -18,7 +18,7 @@
     //   'meta-llama/llama-4-maverick:free'
     //   'meta-llama/llama-3.3-70b-instruct:free'
     //   'mistralai/mistral-small-3.1-24b-instruct:free'
-    MODEL:      'deepseek/deepseek-chat-v3-0324:free',
+    MODEL:      'qwen/qwen3.6-plus:free',
     API_URL:    'https://openrouter.ai/api/v1/chat/completions',
     MAX_TOKENS: 700,
     SITE_URL:   window.location.origin || 'http://localhost:5500',
