@@ -88,13 +88,13 @@
   // ─────────────────────────────────────────────────────
   var style = document.createElement('style');
   style.textContent = [
-    '#cb-btn{position:fixed;bottom:28px;right:28px;z-index:9000;width:60px;height:60px;',
-    'border-radius:50%;background:#0D1B2A;border:2px solid #C9A84C;color:#C9A84C;',
+    '#cb-btn{position:fixed;bottom:28px;right:28px;z-index:9000;width:64px;height:64px;',
+    'border-radius:50%;background:#ffffff;border:3px solid #C9A84C;color:#C9A84C;',
     'font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;',
-    'box-shadow:0 6px 24px rgba(0,0,0,0.45);transition:transform .2s,background .2s;}',
-    '#cb-btn:hover{transform:scale(1.09);background:#1A2E44;}',
-    '#cb-dot{position:absolute;top:3px;right:3px;width:13px;height:13px;',
-    'background:#C9A84C;border-radius:50%;border:2px solid #0D1B2A;}',
+    'box-shadow:0 6px 28px rgba(0,0,0,0.35);transition:transform .2s,box-shadow .2s;overflow:hidden;position:fixed;}',
+    '#cb-btn:hover{transform:scale(1.09);box-shadow:0 8px 32px rgba(201,168,76,0.45);}',
+    '#cb-dot{position:absolute;bottom:2px;right:2px;width:13px;height:13px;',
+    'background:#C9A84C;border-radius:50%;border:2px solid #fff;}',
 
     '#cb-box{position:fixed;bottom:104px;right:28px;z-index:8999;width:380px;height:520px;',
     'border-radius:14px;background:#0f172a;border:1px solid rgba(201,168,76,0.5);',
@@ -106,9 +106,9 @@
 
     '#cb-head{background:#0D1B2A;border-bottom:1px solid rgba(201,168,76,0.3);',
     'padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}',
-    '#cb-avatar{width:42px;height:42px;border-radius:50%;background:rgba(201,168,76,0.1);',
-    'border:1px solid rgba(201,168,76,0.35);display:flex;align-items:center;',
-    'justify-content:center;color:#C9A84C;font-size:18px;flex-shrink:0;}',
+    '#cb-avatar{width:42px;height:42px;border-radius:50%;background:#ffffff;',
+    'border:2px solid rgba(201,168,76,0.35);display:flex;align-items:center;',
+    'justify-content:center;overflow:hidden;flex-shrink:0;}',
     '#cb-head-title{font-size:14px;font-weight:700;color:#C9A84C;line-height:1.25;}',
     '#cb-head-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;',
     'display:flex;align-items:center;gap:5px;}',
@@ -172,7 +172,7 @@
   // ─────────────────────────────────────────────────────
   var btn = document.createElement('button');
   btn.id = 'cb-btn';
-  btn.innerHTML = '<i class="fa-solid fa-comments"></i><span id="cb-dot"></span>';
+  btn.innerHTML = '<img src="media/Chatbot Linear Icon Chat Bot PNG Images, Instant, Headset, Sign PNG Transparent Background - Pngtree.jpg" alt="Asistente" style="width:52px;height:52px;object-fit:cover;border-radius:50%;display:block;"><span id="cb-dot"></span>';
   btn.setAttribute('aria-label', 'Abrir asistente');
 
   var box = document.createElement('div');
@@ -181,7 +181,7 @@
   box.setAttribute('aria-label', 'Asistente EmprendeTributario');
   box.innerHTML = [
     '<div id="cb-head">',
-    '  <div id="cb-avatar"><i class="fa-solid fa-scale-balanced"></i></div>',
+    '  <div id="cb-avatar"><img src="media/Chatbot Linear Icon Chat Bot PNG Images, Instant, Headset, Sign PNG Transparent Background - Pngtree.jpg" style="width:42px;height:42px;object-fit:cover;border-radius:50%;display:block;"></div>',
     '  <div>',
     '    <div id="cb-head-title">Asesor EmprendeTributario</div>',
     '    <div id="cb-head-sub"><span id="cb-online-dot"></span>En línea · SAT · Emprendimiento</div>',
@@ -208,9 +208,7 @@
   // ─────────────────────────────────────────────────────
   btn.addEventListener('click', function () {
     var isOpen = box.classList.toggle('cb-open');
-    btn.querySelector('i').className = isOpen
-      ? 'fa-solid fa-xmark'
-      : 'fa-solid fa-comments';
+    btn.querySelector('img').style.opacity = isOpen ? '0.6' : '1';
     if (isOpen && msgs.children.length === 0) {
       showWelcome();
       textarea.focus();
@@ -219,7 +217,7 @@
 
   document.getElementById('cb-close').addEventListener('click', function () {
     box.classList.remove('cb-open');
-    btn.querySelector('i').className = 'fa-solid fa-comments';
+    btn.querySelector('img').style.opacity = '1';
   });
 
   // ─────────────────────────────────────────────────────
