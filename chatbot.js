@@ -18,7 +18,7 @@
     //   'meta-llama/llama-4-maverick:free'
     //   'meta-llama/llama-3.3-70b-instruct:free'
     //   'mistralai/mistral-small-3.1-24b-instruct:free'
-    MODEL:      'openai/gpt-oss-120b:free',
+    MODEL:      'meta-llama/llama-3.3-70b-instruct:free',
     API_URL:    'https://openrouter.ai/api/v1/chat/completions',
     MAX_TOKENS: 700,
     SITE_URL:   window.location.origin || 'http://localhost:5500',
