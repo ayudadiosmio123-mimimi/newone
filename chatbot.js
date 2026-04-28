@@ -10,7 +10,7 @@
   //  CONFIG
   // ─────────────────────────────────────────────────────
   var first_part = 'sk-or-v1-'
-  var second_part = 'fe779453408989421c8bbf2a5785c7df723e25cbb5d51fe639db07e1d2dadf47'
+  var second_part = '5ad2b442899bcb9c179df20f92bad63af2d1df0147787ece6089173550858396'
   var CFG = {
     API_KEY:    first_part + second_part,
     // Best free model for Spanish / multilingual knowledge (Apr 2026)
